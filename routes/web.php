@@ -3,8 +3,8 @@
 use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminMediaAssetController;
-use App\\Http\\Controllers\\Admin\\AdminPaymentController;
-use App\\Http\\Controllers\\Admin\\AdminSecurityController;
+use App\Http\Controllers\Admin\AdminPaymentController;
+use App\Http\Controllers\Admin\AdminSecurityController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PageController;
@@ -35,6 +35,7 @@ Route::get('/booking/{booking}/pdf', [BookingPdfController::class, 'show'])->nam
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+
     Route::get('/security', [AdminSecurityController::class, 'edit'])->name('security.edit');
     Route::patch('/security/profile', [AdminSecurityController::class, 'updateProfile'])->name('security.profile.update');
     Route::put('/security/password', [AdminSecurityController::class, 'updatePassword'])->name('security.password.update');
@@ -56,4 +57,3 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 require __DIR__.'/auth.php';
-

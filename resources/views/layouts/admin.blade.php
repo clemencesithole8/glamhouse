@@ -30,6 +30,9 @@
                 <a href="{{ route('admin.media-assets.index') }}" class="{{ request()->routeIs('admin.media-assets.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
                     Media Assets
                 </a>
+                <a href="{{ route('admin.security.edit') }}" class="{{ request()->routeIs('admin.security.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Security
+                </a>
                 <a href="{{ route('home') }}" class="flex items-center rounded-xl border border-transparent px-4 py-2.5 font-semibold transition hover:bg-rosegold-50">
                     View Website
                 </a>
@@ -39,6 +42,9 @@
                 <div class="rounded-2xl border border-black/10 bg-white px-4 py-3">
                     <div class="text-sm font-semibold">{{ auth()->user()->name }}</div>
                     <div class="text-xs text-black/55">{{ auth()->user()->email }}</div>
+                    <a href="{{ route('admin.security.edit') }}" class="mt-3 inline-flex w-full items-center justify-center rounded-lg border border-black/15 px-3 py-2 text-xs font-semibold transition hover:bg-rosegold-50">
+                        Manage Security
+                    </a>
                     <form method="POST" action="{{ route('logout') }}" class="mt-3">
                         @csrf
                         <button class="w-full rounded-lg border border-black/15 px-3 py-2 text-xs font-semibold transition hover:bg-black hover:text-white">
@@ -68,6 +74,7 @@
                             <a href="{{ route('admin.bookings.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Bookings</a>
                             <a href="{{ route('admin.payments.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Payments</a>
                             <a href="{{ route('admin.media-assets.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Media Assets</a>
+                            <a href="{{ route('admin.security.edit') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Security</a>
                             <a href="{{ route('home') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">View Website</a>
                         </div>
                     </details>

@@ -115,3 +115,37 @@ After deployment:
 - Vite production assets are fingerprinted and cache-friendly.
 - Security headers middleware is enabled for web responses.
 
+## Admin Authentication Setup
+
+Admin access is protected by `auth` + `admin` middleware and requires `is_admin=true`.
+
+### Initial setup
+
+Run:
+
+```bash
+php artisan admin:setup
+```
+
+You can also provide values directly:
+
+```bash
+php artisan admin:setup --name="Studio Admin" --email="admin@example.com" --password="ChangeMeNow123!"
+```
+
+### Rotate or change credentials
+
+- From dashboard UI: `/admin/security`
+- From CLI: run `php artisan admin:setup` again with new values
+- To promote an existing user without changing password:
+
+```bash
+php artisan admin:setup --email="existing@example.com" --promote-only
+```
+
+### Registration security
+
+Public registration is disabled by default with:
+
+- `AUTH_ALLOW_REGISTRATION=false`
+
