@@ -1,5 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap');
-
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -133,6 +131,68 @@
     backdrop-filter: blur(8px);
   }
 
+  .float-soft {
+    animation: floatSoft 7s ease-in-out infinite;
+  }
+
+  .float-soft-alt {
+    animation: floatSoft 8.5s ease-in-out infinite;
+    animation-delay: 1s;
+  }
+
+  .service-chip {
+    border: 1px solid rgba(36, 25, 21, 0.16);
+    border-radius: 9999px;
+    padding: 0.44rem 0.95rem;
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    transition: border-color 200ms ease, color 200ms ease, background-color 200ms ease, transform 200ms ease;
+  }
+
+  .service-chip:hover {
+    border-color: rgba(185, 83, 106, 0.6);
+    color: var(--site-accent-deep);
+    background: rgba(251, 230, 228, 0.45);
+    transform: translateY(-1px);
+  }
+
+  .service-chip.active {
+    border-color: rgba(185, 83, 106, 0.72);
+    background: rgba(185, 83, 106, 0.12);
+    color: #7e3346;
+  }
+
+  .service-chip:focus-visible {
+    outline: 2px solid rgba(185, 83, 106, 0.55);
+    outline-offset: 2px;
+  }
+
+  .service-card {
+    transition: transform 220ms ease, box-shadow 220ms ease, border-color 220ms ease;
+  }
+
+  .service-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 34px rgba(36, 25, 21, 0.11);
+  }
+
+  .service-card.is-hidden {
+    display: none;
+  }
+
+  .service-card.is-focused {
+    border-color: rgba(185, 83, 106, 0.5);
+    box-shadow: 0 22px 34px rgba(185, 83, 106, 0.15);
+  }
+
+  .service-card:focus-visible {
+    border-color: rgba(185, 83, 106, 0.6);
+    box-shadow: 0 0 0 3px rgba(185, 83, 106, 0.18), 0 22px 34px rgba(36, 25, 21, 0.12);
+    outline: none;
+  }
+
   .live-tilt {
     transform-style: preserve-3d;
     will-change: transform;
@@ -213,11 +273,23 @@
   }
 }
 
+@keyframes floatSoft {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-8px);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal-up,
   .delay-1,
   .delay-2,
-  .delay-3 {
+  .delay-3,
+  .float-soft,
+  .float-soft-alt {
     animation: none;
   }
 
@@ -236,3 +308,5 @@
     display: none;
   }
 }
+
+

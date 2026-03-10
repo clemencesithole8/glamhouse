@@ -1,9 +1,107 @@
 <!doctype html>
 <html lang="en">
 <head>
+    @php
+        $routeName = request()->route()?->getName();
+        $seoDefault = config('seo.default', []);
+        $seoPage = config("seo.pages.{$routeName}", []);
+
+        $metaTitleOverride = trim($__env->yieldContent('meta_title'));
+        $metaTitle = $metaTitleOverride !== ''
+            ? $metaTitleOverride
+            : (string) ($seoPage['title'] ?? $seoDefault['title'] ?? trim($__env->yieldContent('title', config('app.name', 'Glamhouse'))));
+        $metaDescription = trim($__env->yieldContent('meta_description', $seoPage['description'] ?? $seoDefault['description'] ?? ''));
+        $metaKeywords = trim($__env->yieldContent('meta_keywords', $seoPage['keywords'] ?? $seoDefault['keywords'] ?? ''));
+        $metaRobots = trim($__env->yieldContent('meta_robots', $seoPage['robots'] ?? $seoDefault['robots'] ?? 'index,follow'));
+
+        $canonicalUrl = trim($__env->yieldContent('canonical_url', url()->current()));
+        $defaultImagePath = $seoPage['image'] ?? $seoDefault['image'] ?? '';
+        $defaultImageUrl = '';
+
+        if (is_string($defaultImagePath) && $defaultImagePath !== '') {
+            $defaultImageUrl = str_starts_with($defaultImagePath, 'http')
+                ? $defaultImagePath
+                : asset(ltrim($defaultImagePath, '/'));
+        }
+
+        $metaImage = trim($__env->yieldContent('meta_image', $defaultImageUrl));
+        $ogType = trim($__env->yieldContent('og_type', $seoPage['type'] ?? $seoDefault['type'] ?? 'website'));
+
+        $siteName = config('seo.site_name', config('app.name', 'Glamhouse'));
+        $twitterCard = config('seo.social.twitter_card', 'summary_large_image');
+        $twitterSite = config('seo.social.twitter_site', '');
+        $facebookAppId = config('seo.social.facebook_app_id', '');
+        $googleSiteVerification = config('seo.google.site_verification', '');
+
+        $business = config('seo.business', []);
+        $address = array_filter([
+            'streetAddress' => (string) ($business['street_address'] ?? ''),
+            'addressLocality' => (string) ($business['locality'] ?? ''),
+            'addressRegion' => (string) ($business['region'] ?? ''),
+            'postalCode' => (string) ($business['postal_code'] ?? ''),
+            'addressCountry' => (string) ($business['country'] ?? ''),
+        ], static fn ($value) => $value !== '');
+
+        $schema = [
+            '@context' => 'https://schema.org',
+            '@type' => 'ProfessionalService',
+            'name' => (string) ($business['name'] ?? $siteName),
+            'description' => (string) ($business['description'] ?? $metaDescription),
+            'url' => url('/'),
+            'image' => $metaImage !== '' ? $metaImage : null,
+            'telephone' => (string) ($business['phone'] ?? ''),
+            'email' => (string) ($business['email'] ?? ''),
+            'address' => $address !== [] ? array_merge(['@type' => 'PostalAddress'], $address) : null,
+        ];
+
+        $schema = array_filter($schema, static fn ($value) => !is_null($value) && $value !== '' && $value !== []);
+    @endphp
+
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>@yield('title', "Esther's Secrets - Glamhouse")</title>
+    <meta name="description" content="{{ $metaDescription }}">
+    @if($metaKeywords !== '')
+        <meta name="keywords" content="{{ $metaKeywords }}">
+    @endif
+    <meta name="robots" content="{{ $metaRobots }}">
+    <meta name="theme-color" content="#fff7f3">
+    <link rel="canonical" href="{{ $canonicalUrl }}">
+
+    <meta property="og:locale" content="en_ZW">
+    <meta property="og:type" content="{{ $ogType }}">
+    <meta property="og:site_name" content="{{ $siteName }}">
+    <meta property="og:title" content="{{ $metaTitle }}">
+    <meta property="og:description" content="{{ $metaDescription }}">
+    <meta property="og:url" content="{{ $canonicalUrl }}">
+    @if($metaImage !== '')
+        <meta property="og:image" content="{{ $metaImage }}">
+    @endif
+
+    <meta name="twitter:card" content="{{ $twitterCard }}">
+    <meta name="twitter:title" content="{{ $metaTitle }}">
+    <meta name="twitter:description" content="{{ $metaDescription }}">
+    @if($metaImage !== '')
+        <meta name="twitter:image" content="{{ $metaImage }}">
+    @endif
+    @if($twitterSite !== '')
+        <meta name="twitter:site" content="{{ $twitterSite }}">
+    @endif
+    @if($facebookAppId !== '')
+        <meta property="fb:app_id" content="{{ $facebookAppId }}">
+    @endif
+    @if($googleSiteVerification !== '')
+        <meta name="google-site-verification" content="{{ $googleSiteVerification }}">
+    @endif
+
+    <title>{{ $metaTitle }}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script type="application/ld+json">{!! json_encode($schema, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT) !!}</script>
+    @stack('structured_data')
+
     @vite(['resources/css/app.css', 'resources/js/app.js'])
 </head>
 <body class="public-theme antialiased">
@@ -99,3 +197,4 @@
     </div>
 </body>
 </html>
+

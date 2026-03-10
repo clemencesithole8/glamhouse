@@ -57,3 +57,61 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+
+## Glamhouse Production Readiness
+
+### 1) Production settings
+
+Set these values in `.env` for production:
+
+- `APP_ENV=production`
+- `APP_DEBUG=false`
+- `APP_URL=https://your-domain.com`
+- `APP_FORCE_HTTPS=true`
+- `SESSION_SECURE_COOKIE=true`
+
+### 2) Build and optimize before deploy
+
+Run:
+
+```bash
+composer install --no-dev --optimize-autoloader
+php artisan migrate --force
+php artisan config:cache
+php artisan route:cache
+php artisan view:cache
+npm ci
+npm run build
+```
+
+### 3) SEO and meta configuration
+
+Set these SEO variables in `.env`:
+
+- `SEO_SITE_NAME`
+- `SEO_DEFAULT_IMAGE`
+- `GOOGLE_SITE_VERIFICATION`
+- `BUSINESS_*` fields (name, phone, city, country)
+
+The public layout now outputs:
+
+- Canonical URLs
+- Open Graph and Twitter card tags
+- JSON-LD `ProfessionalService` schema
+- Route-aware title/description/keywords from `config/seo.php`
+
+### 4) Google indexing
+
+After deployment:
+
+1. Open [Google Search Console](https://search.google.com/search-console).
+2. Verify the domain (or URL prefix).
+3. Submit `https://your-domain.com/sitemap.xml`.
+4. Confirm `https://your-domain.com/robots.txt` is reachable.
+
+### 5) Performance notes
+
+- Google fonts are now loaded via `<link rel="preconnect">` in the head instead of CSS `@import`.
+- Vite production assets are fingerprinted and cache-friendly.
+- Security headers middleware is enabled for web responses.
+

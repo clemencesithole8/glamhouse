@@ -20,6 +20,18 @@ return [
 
     /*
     |--------------------------------------------------------------------------
+    | Public Registration
+    |--------------------------------------------------------------------------
+    |
+    | Toggle whether the public registration routes should be available.
+    | Keeping this disabled prevents unknown users from creating accounts.
+    |
+    */
+
+    'allow_registration' => (bool) env('AUTH_ALLOW_REGISTRATION', false),
+
+    /*
+    |--------------------------------------------------------------------------
     | Authentication Guards
     |--------------------------------------------------------------------------
     |

@@ -3,12 +3,18 @@
 use App\Http\Controllers\Admin\AdminBookingController;
 use App\Http\Controllers\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\AdminMediaAssetController;
-use App\Http\Controllers\Admin\AdminPaymentController;
+use App\\Http\\Controllers\\Admin\\AdminPaymentController;
+use App\\Http\\Controllers\\Admin\\AdminSecurityController;
 use App\Http\Controllers\AvailabilityController;
 use App\Http\Controllers\BookingController;
 use App\Http\Controllers\PageController;
 use App\Http\Controllers\Pdf\BookingPdfController;
+use App\Http\Controllers\Seo\RobotsController;
+use App\Http\Controllers\Seo\SitemapController;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/robots.txt', RobotsController::class)->name('robots');
+Route::get('/sitemap.xml', SitemapController::class)->name('sitemap');
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -29,6 +35,9 @@ Route::get('/booking/{booking}/pdf', [BookingPdfController::class, 'show'])->nam
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', [AdminDashboardController::class, 'index'])->name('dashboard');
+    Route::get('/security', [AdminSecurityController::class, 'edit'])->name('security.edit');
+    Route::patch('/security/profile', [AdminSecurityController::class, 'updateProfile'])->name('security.profile.update');
+    Route::put('/security/password', [AdminSecurityController::class, 'updatePassword'])->name('security.password.update');
 
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
     Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
@@ -47,3 +56,4 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 });
 
 require __DIR__.'/auth.php';
+
