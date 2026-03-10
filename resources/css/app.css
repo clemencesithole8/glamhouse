@@ -133,6 +133,58 @@
     backdrop-filter: blur(8px);
   }
 
+  .live-tilt {
+    transform-style: preserve-3d;
+    will-change: transform;
+    transition: transform 260ms ease, box-shadow 260ms ease, border-color 220ms ease;
+  }
+
+  .live-tilt:hover {
+    box-shadow: 0 18px 34px rgba(36, 25, 21, 0.14);
+  }
+
+  .image-glow {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .image-glow::after {
+    content: "";
+    position: absolute;
+    inset: -40% -120%;
+    pointer-events: none;
+    background: linear-gradient(110deg, transparent 35%, rgba(255, 255, 255, 0.22) 50%, transparent 65%);
+    transform: translateX(-55%);
+    transition: transform 700ms ease;
+  }
+
+  .image-glow:hover::after {
+    transform: translateX(35%);
+  }
+
+  .js-motion .soft-reveal {
+    opacity: 0;
+    transform: translateY(20px) scale(0.99);
+    transition: opacity 620ms ease, transform 620ms ease;
+  }
+
+  .js-motion .soft-reveal.is-visible {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+
+  .js-motion .soft-reveal[data-reveal-delay="1"] {
+    transition-delay: 90ms;
+  }
+
+  .js-motion .soft-reveal[data-reveal-delay="2"] {
+    transition-delay: 180ms;
+  }
+
+  .js-motion .soft-reveal[data-reveal-delay="3"] {
+    transition-delay: 260ms;
+  }
+
   .reveal-up {
     animation: revealUp 640ms ease both;
   }
@@ -167,5 +219,20 @@
   .delay-2,
   .delay-3 {
     animation: none;
+  }
+
+  .js-motion .soft-reveal,
+  .js-motion .soft-reveal.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .live-tilt {
+    transform: none !important;
+  }
+
+  .image-glow::after {
+    display: none;
   }
 }

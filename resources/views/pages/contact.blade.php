@@ -2,67 +2,154 @@
 @section('title', 'Contact - Glamhouse')
 
 @section('content')
-<div class="mx-auto max-w-6xl px-4 py-12">
-    <div class="grid gap-10 md:grid-cols-2 items-start">
-        <div>
-            <h1 class="font-serif text-4xl">Contact</h1>
-            <p class="mt-3 text-black/70">
-                For bookings, corporate consultations, or general enquiries—reach out below.
-            </p>
+@php
+    $whatsappNumber = '263784721479';
+    $whatsappDisplay = '+263784721479';
+    $emailAddress = 'esther2026@gmail.com';
+@endphp
 
-            <div class="mt-8 space-y-4">
-                <div class="rounded-2xl border border-black/10 bg-white p-6">
-                    <div class="font-semibold">WhatsApp / Phone</div>
-                    <div class="mt-2 text-sm text-black/70">
-                        <span class="text-black">Add your number here</span>
-                        <div class="mt-2 text-xs text-black/60">Tip: Later we’ll turn this into a clickable WhatsApp link.</div>
-                    </div>
+<div class="mx-auto max-w-7xl space-y-10 px-4 pb-20 pt-10 sm:px-6 lg:px-8">
+    <section class="grid gap-8 lg:grid-cols-[1.06fr_0.94fr]">
+        <div class="space-y-5 reveal-up">
+            <article class="relative overflow-hidden rounded-[2rem] border border-rosegold-200 bg-[linear-gradient(130deg,#fff9f8_0%,#fff2ef_48%,#fffefd_100%)] p-7 sm:p-8">
+                <div class="absolute -right-10 top-0 h-44 w-44 rounded-full bg-rosegold-100/70 blur-2xl"></div>
+
+                <p class="relative inline-flex rounded-full border border-rosegold-200 bg-white/75 px-3 py-1 text-[0.67rem] font-semibold uppercase tracking-[0.2em] text-rosegold-800">
+                    Fast Response Contact
+                </p>
+                <h1 class="font-display relative mt-5 text-5xl leading-[0.95] text-[#2a1c19] sm:text-6xl">Get In Touch</h1>
+                <p class="relative mt-4 max-w-xl text-base leading-relaxed text-black/70">
+                    For bookings, corporate consultations, collaborations, and glam enquiries, choose your preferred channel below.
+                </p>
+
+                <div class="relative mt-6 grid gap-3 sm:grid-cols-2">
+                    <a
+                        href="https://wa.me/{{ $whatsappNumber }}"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        class="group rounded-2xl border border-black/10 bg-white/90 p-4 transition hover:-translate-y-0.5 hover:border-green-300 hover:shadow-lg"
+                    >
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-green-100 text-green-700">
+                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <path d="M20.5 12a8.5 8.5 0 0 1-12.45 7.53L3 21l1.55-4.83A8.5 8.5 0 1 1 20.5 12Z"/>
+                                    <path d="M9.4 8.9c.1-.2.2-.2.4-.2h.8c.1 0 .3.1.3.2l.7 1.8a.4.4 0 0 1-.1.4l-.6.7a6.4 6.4 0 0 0 2.9 2.9l.7-.6c.1-.1.3-.2.4-.1l1.8.7c.1 0 .2.2.2.3v.8c0 .2-.1.3-.2.4-.4.3-1 .5-1.5.4-1.4-.2-3-1.1-4.4-2.5-1.4-1.4-2.3-3-2.5-4.4 0-.5.1-1.1.4-1.5Z"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <div class="text-xs font-semibold uppercase tracking-[0.14em] text-black/55">WhatsApp</div>
+                                <div class="text-sm font-bold text-[#2a1c19]">{{ $whatsappDisplay }}</div>
+                            </div>
+                        </div>
+                    </a>
+
+                    <a
+                        href="mailto:{{ $emailAddress }}"
+                        class="group rounded-2xl border border-black/10 bg-white/90 p-4 transition hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-lg"
+                    >
+                        <div class="flex items-center gap-3">
+                            <span class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-sky-100 text-sky-700">
+                                <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                    <rect x="3" y="5" width="18" height="14" rx="2"/>
+                                    <path d="m4 7 8 6 8-6"/>
+                                </svg>
+                            </span>
+                            <div>
+                                <div class="text-xs font-semibold uppercase tracking-[0.14em] text-black/55">Email</div>
+                                <div class="text-sm font-bold text-[#2a1c19]">{{ $emailAddress }}</div>
+                            </div>
+                        </div>
+                    </a>
                 </div>
 
-                <div class="rounded-2xl border border-black/10 bg-white p-6">
-                    <div class="font-semibold">Email</div>
-                    <div class="mt-2 text-sm text-black/70">esther2026@gmail.com</div>
+                <p class="relative mt-4 text-xs text-black/55">Typical response window: same day during business hours.</p>
+            </article>
+
+            <article class="glass-card reveal-up delay-1 rounded-3xl p-6">
+                <div class="flex items-center justify-between gap-3">
+                    <h2 class="font-display text-3xl text-[#2a1c19]">Social Channels</h2>
+                    <span class="rounded-full bg-rosegold-100 px-3 py-1 text-[0.67rem] font-semibold uppercase tracking-[0.16em] text-rosegold-800">Follow</span>
                 </div>
 
-                <div class="rounded-2xl border border-black/10 bg-white p-6">
-                    <div class="font-semibold">Location</div>
-                    <div class="mt-2 text-sm text-black/70">Harare, Zimbabwe</div>
-                </div>
+                <div class="mt-5 grid gap-3 sm:grid-cols-3">
+                    <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-black/10 bg-white p-4 transition hover:-translate-y-0.5 hover:border-[#f77737] hover:shadow-lg">
+                        <div class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#fff1e7] text-[#f77737]">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <rect x="3" y="3" width="18" height="18" rx="5"/>
+                                <circle cx="12" cy="12" r="4"/>
+                                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-sm font-semibold">Instagram</div>
+                        <div class="text-xs text-black/60">Tap to update link later</div>
+                    </a>
 
-                <div class="rounded-2xl border border-black/10 bg-white p-6">
-                    <div class="font-semibold">Socials</div>
-                    <div class="mt-2 text-sm text-black/70 space-y-2">
-                        <div>Instagram: <span class="text-black">@esthers_secrets_glam</span></div>
-                        <div>TikTok: <span class="text-black">@siboqueenesther</span></div>
-                        <div>YouTube: <span class="text-black">Sibo_Queen_Esther</span></div>
-                    </div>
+                    <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-black/10 bg-white p-4 transition hover:-translate-y-0.5 hover:border-black/40 hover:shadow-lg">
+                        <div class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-900">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <path d="M14 5v8.5a3.5 3.5 0 1 1-2.5-3.35"/>
+                                <path d="M14 5c1.2 1.8 2.8 2.7 5 2.8"/>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-sm font-semibold">TikTok</div>
+                        <div class="text-xs text-black/60">Tap to update link later</div>
+                    </a>
+
+                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-black/10 bg-white p-4 transition hover:-translate-y-0.5 hover:border-rose-400 hover:shadow-lg">
+                        <div class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-rose-100 text-rose-700">
+                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+                                <rect x="2.5" y="6" width="19" height="12" rx="3"/>
+                                <path d="m10 9 5 3-5 3Z" fill="currentColor" stroke="none"/>
+                            </svg>
+                        </div>
+                        <div class="mt-3 text-sm font-semibold">YouTube</div>
+                        <div class="text-xs text-black/60">Tap to update link later</div>
+                    </a>
                 </div>
+            </article>
+
+            <div class="grid gap-4 sm:grid-cols-2 reveal-up delay-2">
+                <article class="rounded-3xl border border-black/10 bg-white/85 p-5">
+                    <div class="text-xs font-semibold uppercase tracking-[0.15em] text-black/55">Location</div>
+                    <div class="mt-2 text-lg font-bold text-[#2a1c19]">Harare, Zimbabwe</div>
+                    <p class="mt-2 text-sm text-black/65">In-studio and outcall sessions available.</p>
+                </article>
+
+                <article class="rounded-3xl border border-black/10 bg-white/85 p-5">
+                    <div class="text-xs font-semibold uppercase tracking-[0.15em] text-black/55">Need Full Booking?</div>
+                    <a href="{{ route('booking.create') }}" class="btn-primary mt-3 inline-flex text-sm">Open Booking Form</a>
+                    <p class="mt-2 text-sm text-black/65">Share your event details and preferred date in one go.</p>
+                </article>
             </div>
         </div>
 
-        <div class="space-y-6">
-            {{-- Cozy image stack --}}
-            <div class="rounded-3xl border border-black/10 overflow-hidden bg-white">
-                <img src="{{ asset('images/contact-hero.jpg') }}" alt="Contact"
-                     class="w-full h-[360px] object-cover">
-            </div>
+        <div class="space-y-4 reveal-up delay-1">
+            <article class="glass-card overflow-hidden rounded-[1.8rem] p-3">
+                <img
+                    src="{{ media_url('contact_hero', asset('images/contact-hero.jpg')) }}"
+                    alt="{{ media_alt('contact_hero', 'Contact hero image') }}"
+                    class="h-[410px] w-full rounded-[1.35rem] object-cover"
+                >
+            </article>
 
             <div class="grid gap-4 sm:grid-cols-2">
-                <div class="rounded-3xl border border-black/10 overflow-hidden bg-white">
-                    <img src="{{ asset('images/contact-1.jpg') }}" alt="Work sample"
-                         class="w-full h-[200px] object-cover">
-                </div>
-                <div class="rounded-3xl border border-black/10 overflow-hidden bg-white">
-                    <img src="{{ asset('images/contact-2.jpg') }}" alt="Work sample"
-                         class="w-full h-[200px] object-cover">
-                </div>
-            </div>
+                <article class="glass-card overflow-hidden rounded-3xl p-2">
+                    <img
+                        src="{{ media_url('contact_1', asset('images/contact-1.jpg')) }}"
+                        alt="{{ media_alt('contact_1', 'Contact gallery image one') }}"
+                        class="h-[205px] w-full rounded-2xl object-cover"
+                    >
+                </article>
 
-            <a href="{{ route('booking.create') }}"
-               class="block text-center rounded-full bg-black px-6 py-3 text-white hover:bg-rosegold-600 transition">
-                Go to Booking Form
-            </a>
+                <article class="glass-card overflow-hidden rounded-3xl p-2">
+                    <img
+                        src="{{ media_url('contact_2', asset('images/contact-2.jpg')) }}"
+                        alt="{{ media_alt('contact_2', 'Contact gallery image two') }}"
+                        class="h-[205px] w-full rounded-2xl object-cover"
+                    >
+                </article>
+            </div>
         </div>
-    </div>
+    </section>
 </div>
 @endsection

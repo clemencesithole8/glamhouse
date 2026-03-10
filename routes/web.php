@@ -1,20 +1,14 @@
 <?php
-use App\Http\Controllers\PageController;
-use App\Http\Controllers\BookingController;
-use App\Http\Controllers\AvailabilityController;
-use App\Http\Controllers\Pdf\BookingPdfController;
-use App\Http\Controllers\Admin\AdminDashboardController;
-use App\Http\Controllers\Admin\AdminBookingController;
-use App\Http\Controllers\Admin\AdminPaymentController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Admin\AdminMediaAssetController;
 
-Route::get('/media-assets', [AdminMediaAssetController::class, 'index'])->name('media-assets.index');
-Route::get('/media-assets/create', [AdminMediaAssetController::class, 'create'])->name('media-assets.create');
-Route::post('/media-assets', [AdminMediaAssetController::class, 'store'])->name('media-assets.store');
-Route::get('/media-assets/{mediaAsset}/edit', [AdminMediaAssetController::class, 'edit'])->name('media-assets.edit');
-Route::put('/media-assets/{mediaAsset}', [AdminMediaAssetController::class, 'update'])->name('media-assets.update');
-Route::delete('/media-assets/{mediaAsset}', [AdminMediaAssetController::class, 'destroy'])->name('media-assets.destroy');
+use App\Http\Controllers\Admin\AdminBookingController;
+use App\Http\Controllers\Admin\AdminDashboardController;
+use App\Http\Controllers\Admin\AdminMediaAssetController;
+use App\Http\Controllers\Admin\AdminPaymentController;
+use App\Http\Controllers\AvailabilityController;
+use App\Http\Controllers\BookingController;
+use App\Http\Controllers\PageController;
+use App\Http\Controllers\Pdf\BookingPdfController;
+use Illuminate\Support\Facades\Route;
 
 Route::get('/', [PageController::class, 'home'])->name('home');
 Route::get('/about', [PageController::class, 'about'])->name('about');
@@ -43,6 +37,13 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
     Route::post('/bookings/{booking}/payments', [AdminPaymentController::class, 'store'])->name('payments.store');
+
+    Route::get('/media-assets', [AdminMediaAssetController::class, 'index'])->name('media-assets.index');
+    Route::get('/media-assets/create', [AdminMediaAssetController::class, 'create'])->name('media-assets.create');
+    Route::post('/media-assets', [AdminMediaAssetController::class, 'store'])->name('media-assets.store');
+    Route::get('/media-assets/{mediaAsset}/edit', [AdminMediaAssetController::class, 'edit'])->name('media-assets.edit');
+    Route::put('/media-assets/{mediaAsset}', [AdminMediaAssetController::class, 'update'])->name('media-assets.update');
+    Route::delete('/media-assets/{mediaAsset}', [AdminMediaAssetController::class, 'destroy'])->name('media-assets.destroy');
 });
 
 require __DIR__.'/auth.php';

@@ -7,6 +7,7 @@ use App\Models\Service;
 use App\Models\TimeSlot;
 use App\Notifications\BookingSubmittedClientNotification;
 use App\Notifications\BookingSubmittedAdminNotification;
+use App\Services\WhatsAppNotifier;
 use Illuminate\Support\Facades\Notification;
 
 class BookingController extends Controller
@@ -33,7 +34,7 @@ class BookingController extends Controller
             $conflict = Booking::query()
                 ->whereDate('appointment_date', $data['appointment_date'])
                 ->where('time_slot_id', $data['time_slot_id'])
-                ->whereIn('status', ['pending','confirmed'])
+                ->whereIn('status', ['pending', 'confirmed'])
                 ->exists();
 
             if ($conflict) {
@@ -59,8 +60,10 @@ class BookingController extends Controller
                 ->notify(new BookingSubmittedAdminNotification($booking));
         }
 
-        // WhatsApp placeholder: implement with Cloud API/Twilio via queued Job later
-        // dispatch(new SendWhatsAppBookingReceivedJob($booking));
+        // Optional WhatsApp admin alert (enabled through env/config)
+        app(WhatsAppNotifier::class)->sendNewBookingAlert(
+            $booking->loadMissing(['service', 'timeSlot'])
+        );
 
         return redirect()
             ->route('booking.pdf', $booking)

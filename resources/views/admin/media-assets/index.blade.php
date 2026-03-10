@@ -1,86 +1,85 @@
-@extends('layouts.app')
+@extends('layouts.admin')
+
+@section('title', 'Media Assets - Glamhouse Admin')
+@section('page_title', 'Media Assets')
+
+@section('page_actions')
+    <a href="{{ route('admin.media-assets.create') }}" class="btn-primary text-xs">Add Image</a>
+@endsection
 
 @section('content')
-<div class="py-8">
-    <div class="max-w-6xl mx-auto sm:px-6 lg:px-8">
-        <div class="flex items-end justify-between gap-4">
-            <div>
-                <h1 class="text-2xl font-semibold">Image Manager</h1>
-                <p class="text-sm text-gray-600 mt-1">Upload/replace site images by key (no code edits).</p>
-            </div>
-            <a href="{{ route('admin.media-assets.create') }}"
-               class="rounded-full bg-black px-5 py-2 text-white hover:bg-rosegold-600 transition">
-                Add Image
-            </a>
-        </div>
+<div class="space-y-5">
+    <section class="rounded-3xl border border-black/10 bg-white p-5">
+        <form method="GET" class="grid gap-3 md:grid-cols-[1fr_auto]">
+            <input
+                name="search"
+                value="{{ request('search') }}"
+                placeholder="Search by key or title (e.g. home_hero)"
+                class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500"
+            >
+            <button class="btn-outline text-sm">Search</button>
+        </form>
+    </section>
 
-        <div class="mt-6">
-            <form method="GET" class="flex gap-3">
-                <input name="search" value="{{ request('search') }}"
-                       class="w-full rounded-xl border-gray-300"
-                       placeholder="Search by key/title (e.g. home_hero)">
-                <button class="rounded-xl border border-gray-300 px-4 py-2">Search</button>
-            </form>
-        </div>
-
-        <div class="mt-6 bg-white shadow-sm rounded-2xl border border-gray-200 overflow-hidden">
-            <table class="w-full text-sm">
-                <thead class="bg-gray-50 text-gray-700">
+    <section class="overflow-hidden rounded-3xl border border-black/10 bg-white">
+        <div class="overflow-x-auto">
+            <table class="min-w-full text-sm">
+                <thead class="bg-[#f8f2ec] text-left text-xs uppercase tracking-[0.12em] text-black/60">
                     <tr>
-                        <th class="text-left p-3">Preview</th>
-                        <th class="text-left p-3">Key</th>
-                        <th class="text-left p-3">Title</th>
-                        <th class="text-left p-3">Active</th>
-                        <th class="text-right p-3">Actions</th>
+                        <th class="px-4 py-3">Preview</th>
+                        <th class="px-4 py-3">Key</th>
+                        <th class="px-4 py-3">Title</th>
+                        <th class="px-4 py-3">Active</th>
+                        <th class="px-4 py-3 text-right">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
                 @forelse($assets as $a)
-                    <tr class="border-t">
-                        <td class="p-3">
-                            <img src="{{ \Illuminate\Support\Facades\Storage::disk($a->disk)->url($a->path) }}"
-                                 class="h-12 w-20 object-cover rounded-lg border" alt="">
+                    <tr class="border-t border-black/10">
+                        <td class="px-4 py-3">
+                            <img src="{{ \Illuminate\Support\Facades\Storage::disk($a->disk)->url($a->path) }}" class="h-14 w-24 rounded-xl border border-black/10 object-cover" alt="">
                         </td>
-                        <td class="p-3 font-mono">{{ $a->key }}</td>
-                        <td class="p-3">{{ $a->title ?? '—' }}</td>
-                        <td class="p-3">
-                            <span class="inline-flex rounded-full px-2 py-1 text-xs {{ $a->is_active ? 'bg-green-50 text-green-700' : 'bg-gray-100 text-gray-700' }}">
+                        <td class="px-4 py-3 font-mono text-xs">{{ $a->key }}</td>
+                        <td class="px-4 py-3">{{ $a->title ?: '-' }}</td>
+                        <td class="px-4 py-3">
+                            <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $a->is_active ? 'bg-emerald-100 text-emerald-900' : 'bg-gray-100 text-gray-700' }}">
                                 {{ $a->is_active ? 'Yes' : 'No' }}
                             </span>
                         </td>
-                        <td class="p-3 text-right">
-                            <a href="{{ route('admin.media-assets.edit', $a) }}"
-                               class="inline-flex rounded-xl border border-gray-300 px-3 py-2 hover:border-rosegold-600 hover:text-rosegold-600 transition">
-                                Edit
-                            </a>
+                        <td class="px-4 py-3 text-right">
+                            <a href="{{ route('admin.media-assets.edit', $a) }}" class="btn-outline inline-flex px-4 py-2 text-xs">Edit</a>
                         </td>
                     </tr>
                 @empty
-                    <tr><td class="p-6 text-gray-600" colspan="5">No images yet. Click “Add Image”.</td></tr>
+                    <tr>
+                        <td class="px-6 py-8 text-center text-sm text-black/60" colspan="5">No images yet. Click Add Image to start.</td>
+                    </tr>
                 @endforelse
                 </tbody>
             </table>
         </div>
 
-        <div class="mt-6">{{ $assets->links() }}</div>
+        @if($assets->hasPages())
+            <div class="border-t border-black/10 px-4 py-4">{{ $assets->links() }}</div>
+        @endif
+    </section>
 
-        <div class="mt-8 rounded-2xl border border-gray-200 bg-white p-5 text-sm text-gray-700">
-            <div class="font-semibold mb-2">Recommended keys (copy/paste):</div>
-            <div class="grid md:grid-cols-2 gap-2 font-mono text-xs">
-                <div>home_hero</div>
-                <div>services_banner</div>
-                <div>about_portrait</div>
-                <div>about_studio</div>
-                <div>picture_perfect_hero</div>
-                <div>picture_perfect_set</div>
-                <div>portfolio_banner</div>
-                <div>policies_banner</div>
-                <div>faq_banner</div>
-                <div>contact_hero</div>
-                <div>contact_1</div>
-                <div>contact_2</div>
-            </div>
+    <section class="rounded-3xl border border-black/10 bg-white p-5">
+        <div class="mb-3 text-sm font-semibold">Suggested keys</div>
+        <div class="grid gap-2 text-xs font-mono text-black/75 md:grid-cols-2 lg:grid-cols-3">
+            <div>home_hero</div>
+            <div>home_feature_1</div>
+            <div>home_feature_2</div>
+            <div>home_feature_3</div>
+            <div>home_about_image</div>
+            <div>home_cta_image</div>
+            <div>about_portrait</div>
+            <div>about_studio</div>
+            <div>services_banner</div>
+            <div>portfolio_banner</div>
+            <div>contact_hero</div>
+            <div>faq_banner</div>
         </div>
-    </div>
+    </section>
 </div>
 @endsection

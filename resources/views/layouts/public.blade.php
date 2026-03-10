@@ -92,7 +92,7 @@
 
                 <div class="mt-10 flex flex-wrap items-center justify-between gap-3 border-t border-black/10 pt-6 text-xs text-black/55">
                     <div>&copy; {{ date('Y') }} Esther's Secrets - Glamhouse</div>
-                    <div>Designed for elegant, camera-ready beauty.</div>
+                    <div class="ml-auto text-right">Designed by Clemence Wiseman - All rights reserved</div>
                 </div>
             </div>
         </footer>

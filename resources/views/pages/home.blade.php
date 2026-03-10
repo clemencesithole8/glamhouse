@@ -3,13 +3,126 @@
 @section('title', "Esther's Secrets - Glamhouse")
 
 @section('content')
+@php
+    $homeHeroMedia = media_pool(
+        ['home_hero', 'home_about_image', 'home_feature_1', 'home_feature_2', 'home_feature_3'],
+        [
+            asset('images/home-hero-fallback.jpg'),
+            asset('images/home-about.jpg'),
+            asset('images/home-feature-1.jpg'),
+            asset('images/home-feature-2.jpg'),
+            asset('images/home-feature-3.jpg'),
+        ],
+        'Glamhouse hero image'
+    );
+
+    $homeFeatureMainMedia = media_pool(
+        ['home_feature_1', 'home_feature_2', 'home_feature_3', 'home_hero'],
+        [
+            asset('images/home-feature-1.jpg'),
+            asset('images/home-feature-2.jpg'),
+            asset('images/home-feature-3.jpg'),
+            asset('images/home-hero-fallback.jpg'),
+        ],
+        'Feature image'
+    );
+
+    $homeFeatureTwoMedia = media_pool(
+        ['home_feature_2', 'home_feature_3', 'home_about_image', 'contact_1'],
+        [
+            asset('images/home-feature-2.jpg'),
+            asset('images/home-feature-3.jpg'),
+            asset('images/home-about.jpg'),
+            asset('images/contact-1.jpg'),
+        ],
+        'Feature image'
+    );
+
+    $homeFeatureThreeMedia = media_pool(
+        ['home_feature_3', 'home_feature_2', 'home_about_image', 'contact_2'],
+        [
+            asset('images/home-feature-3.jpg'),
+            asset('images/home-feature-2.jpg'),
+            asset('images/home-about.jpg'),
+            asset('images/contact-2.jpg'),
+        ],
+        'Feature image'
+    );
+
+    $homeAboutMedia = media_pool(
+        ['home_about_image', 'home_hero', 'home_feature_1', 'home_feature_2'],
+        [
+            asset('images/home-about.jpg'),
+            asset('images/home-hero-fallback.jpg'),
+            asset('images/home-feature-1.jpg'),
+            asset('images/home-feature-2.jpg'),
+        ],
+        'About Glamhouse image'
+    );
+
+    $homeCtaMedia = media_pool(
+        ['home_cta_image', 'home_about_image', 'home_feature_3', 'contact_hero'],
+        [
+            asset('images/home-cta.jpg'),
+            asset('images/home-about.jpg'),
+            asset('images/home-feature-3.jpg'),
+            asset('images/contact-hero.jpg'),
+        ],
+        'Booking call to action image'
+    );
+
+    $homePortfolioFallbackOne = media_pool(
+        ['home_portfolio_1', 'home_portfolio_2', 'home_portfolio_3', 'home_portfolio_4'],
+        [
+            asset('images/home-portfolio-1.jpg'),
+            asset('images/home-portfolio-2.jpg'),
+            asset('images/home-portfolio-3.jpg'),
+            asset('images/home-portfolio-4.jpg'),
+        ],
+        'Portfolio preview'
+    );
+
+    $homePortfolioFallbackTwo = media_pool(
+        ['home_portfolio_2', 'home_portfolio_3', 'home_portfolio_4', 'home_portfolio_1'],
+        [
+            asset('images/home-portfolio-2.jpg'),
+            asset('images/home-portfolio-3.jpg'),
+            asset('images/home-portfolio-4.jpg'),
+            asset('images/home-portfolio-1.jpg'),
+        ],
+        'Portfolio preview'
+    );
+
+    $homePortfolioFallbackThree = media_pool(
+        ['home_portfolio_3', 'home_portfolio_4', 'home_portfolio_1', 'home_portfolio_2'],
+        [
+            asset('images/home-portfolio-3.jpg'),
+            asset('images/home-portfolio-4.jpg'),
+            asset('images/home-portfolio-1.jpg'),
+            asset('images/home-portfolio-2.jpg'),
+        ],
+        'Portfolio preview'
+    );
+
+    $homePortfolioFallbackFour = media_pool(
+        ['home_portfolio_4', 'home_portfolio_1', 'home_portfolio_2', 'home_portfolio_3'],
+        [
+            asset('images/home-portfolio-4.jpg'),
+            asset('images/home-portfolio-1.jpg'),
+            asset('images/home-portfolio-2.jpg'),
+            asset('images/home-portfolio-3.jpg'),
+        ],
+        'Portfolio preview'
+    );
+@endphp
+
 <div class="mx-auto max-w-7xl space-y-20 px-4 pb-20 pt-10 sm:px-6 lg:px-8">
-    <section class="relative overflow-hidden rounded-[2rem] border border-rosegold-200 bg-[linear-gradient(130deg,#fff9f8_0%,#fff4ef_45%,#fffdfc_100%)] p-6 sm:p-10 lg:p-12">
+    <section class="relative overflow-hidden rounded-[2rem] border border-rosegold-200 bg-[linear-gradient(130deg,#fff9f8_0%,#fff4ef_45%,#fffdfc_100%)] p-6 sm:p-10 lg:p-12 soft-reveal">
         <div class="absolute -left-16 top-6 h-44 w-44 rounded-full bg-rosegold-100/70 blur-2xl"></div>
         <div class="absolute -right-16 bottom-2 h-56 w-56 rounded-full bg-[#f4e6c9]/70 blur-2xl"></div>
 
         <div class="relative grid items-center gap-10 lg:grid-cols-[1.1fr_0.9fr]">
-            <div class="reveal-up">
+            <div>
                 <p class="inline-flex rounded-full border border-rosegold-200 bg-white/70 px-4 py-2 text-[0.68rem] font-semibold uppercase tracking-[0.24em] text-rosegold-800">
                     Skincare-first * Camera-aware * Long-lasting glam
                 </p>
@@ -29,22 +142,22 @@
                 </div>
 
                 <div class="mt-10 grid max-w-md grid-cols-2 gap-4">
-                    <div class="glass-card rounded-2xl p-4 reveal-up delay-1">
+                    <div class="glass-card rounded-2xl p-4 soft-reveal" data-reveal-delay="1">
                         <div class="text-xl font-extrabold text-[#2c1d1a]">100+</div>
                         <div class="mt-1 text-xs uppercase tracking-[0.16em] text-black/55">Looks Delivered</div>
                     </div>
-                    <div class="glass-card rounded-2xl p-4 reveal-up delay-2">
+                    <div class="glass-card rounded-2xl p-4 soft-reveal" data-reveal-delay="2">
                         <div class="text-xl font-extrabold text-[#2c1d1a]">4</div>
                         <div class="mt-1 text-xs uppercase tracking-[0.16em] text-black/55">Glam Styles</div>
                     </div>
                 </div>
             </div>
 
-            <div class="reveal-up delay-1">
-                <div class="glass-card overflow-hidden rounded-[1.8rem] p-3">
+            <div class="soft-reveal" data-reveal-delay="1">
+                <div class="glass-card live-tilt image-glow overflow-hidden rounded-[1.8rem] p-3">
                     <img
-                        src="{{ media_url('home_hero', asset('images/home-hero-fallback.jpg')) }}"
-                        alt="{{ media_alt('home_hero', 'Glamhouse hero image') }}"
+                        src="{{ $homeHeroMedia['url'] }}"
+                        alt="{{ $homeHeroMedia['alt'] }}"
                         class="h-[560px] w-full rounded-[1.35rem] object-cover"
                     >
                 </div>
@@ -53,11 +166,12 @@
                     <div class="glass-card rounded-2xl px-4 py-3 text-sm font-semibold">Soft glam mastery</div>
                     <div class="glass-card rounded-2xl px-4 py-3 text-sm font-semibold">Studio-light ready</div>
                 </div>
+                <div class="mt-2 text-right text-[0.64rem] uppercase tracking-[0.18em] text-black/45">Live visual rotation</div>
             </div>
         </div>
     </section>
 
-    <section>
+    <section class="soft-reveal" data-reveal-delay="1">
         <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-rosegold-700">Why Clients Return</p>
@@ -67,22 +181,22 @@
         </div>
 
         <div class="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
-            <div class="glass-card reveal-up rounded-3xl p-6">
+            <div class="glass-card soft-reveal rounded-3xl p-6" data-reveal-delay="1">
                 <div class="text-xs font-bold uppercase tracking-[0.18em] text-rosegold-700">01</div>
                 <h3 class="font-display mt-3 text-2xl text-[#2c1d1a]">Skin Health First</h3>
                 <p class="mt-3 text-sm leading-relaxed text-black/65">Prep and product choices are tailored to skin condition, climate, and wear time so beauty lasts comfortably.</p>
             </div>
-            <div class="glass-card reveal-up delay-1 rounded-3xl p-6">
+            <div class="glass-card soft-reveal rounded-3xl p-6" data-reveal-delay="2">
                 <div class="text-xs font-bold uppercase tracking-[0.18em] text-rosegold-700">02</div>
                 <h3 class="font-display mt-3 text-2xl text-[#2c1d1a]">Feature Mapping</h3>
                 <p class="mt-3 text-sm leading-relaxed text-black/65">Every contour, highlight, and color placement is designed around your bone structure and natural expression.</p>
             </div>
-            <div class="glass-card reveal-up delay-2 rounded-3xl p-6">
+            <div class="glass-card soft-reveal rounded-3xl p-6" data-reveal-delay="3">
                 <div class="text-xs font-bold uppercase tracking-[0.18em] text-rosegold-700">03</div>
                 <h3 class="font-display mt-3 text-2xl text-[#2c1d1a]">Camera Intelligence</h3>
                 <p class="mt-3 text-sm leading-relaxed text-black/65">Looks are tested mentally against flash, daylight, and studio setups to avoid washout and texture distortion.</p>
             </div>
-            <div class="glass-card reveal-up delay-3 rounded-3xl p-6">
+            <div class="glass-card soft-reveal rounded-3xl p-6" data-reveal-delay="3">
                 <div class="text-xs font-bold uppercase tracking-[0.18em] text-rosegold-700">04</div>
                 <h3 class="font-display mt-3 text-2xl text-[#2c1d1a]">Wear-Through Finish</h3>
                 <p class="mt-3 text-sm leading-relaxed text-black/65">From vows to after-party, your glam holds its tone, shape, and softness with minimal touchups.</p>
@@ -90,11 +204,11 @@
         </div>
     </section>
 
-    <section class="grid gap-4 lg:grid-cols-[1.25fr_0.75fr]">
-        <div class="glass-card group relative overflow-hidden rounded-[1.8rem] p-3 reveal-up">
+    <section class="grid gap-4 lg:grid-cols-[1.25fr_0.75fr] soft-reveal" data-reveal-delay="1">
+        <div class="glass-card live-tilt image-glow group relative overflow-hidden rounded-[1.8rem] p-3">
             <img
-                src="{{ media_url('home_feature_1', asset('images/home-feature-1.jpg')) }}"
-                alt="{{ media_alt('home_feature_1', 'Soft glam makeup image') }}"
+                src="{{ $homeFeatureMainMedia['url'] }}"
+                alt="{{ $homeFeatureMainMedia['alt'] }}"
                 class="h-[460px] w-full rounded-[1.35rem] object-cover transition duration-500 group-hover:scale-[1.03]"
             >
             <div class="absolute inset-x-8 bottom-8 rounded-2xl bg-black/60 px-4 py-3 text-white backdrop-blur-sm">
@@ -104,33 +218,33 @@
         </div>
 
         <div class="grid gap-4">
-            <div class="glass-card overflow-hidden rounded-3xl p-3 reveal-up delay-1">
+            <div class="glass-card live-tilt image-glow overflow-hidden rounded-3xl p-3 soft-reveal" data-reveal-delay="2">
                 <img
-                    src="{{ media_url('home_feature_2', asset('images/home-feature-2.jpg')) }}"
-                    alt="{{ media_alt('home_feature_2', 'Natural glam makeup image') }}"
+                    src="{{ $homeFeatureTwoMedia['url'] }}"
+                    alt="{{ $homeFeatureTwoMedia['alt'] }}"
                     class="h-[220px] w-full rounded-2xl object-cover"
                 >
             </div>
-            <div class="glass-card overflow-hidden rounded-3xl p-3 reveal-up delay-2">
+            <div class="glass-card live-tilt image-glow overflow-hidden rounded-3xl p-3 soft-reveal" data-reveal-delay="3">
                 <img
-                    src="{{ media_url('home_feature_3', asset('images/home-feature-3.jpg')) }}"
-                    alt="{{ media_alt('home_feature_3', 'Full glam makeup image') }}"
+                    src="{{ $homeFeatureThreeMedia['url'] }}"
+                    alt="{{ $homeFeatureThreeMedia['alt'] }}"
                     class="h-[220px] w-full rounded-2xl object-cover"
                 >
             </div>
         </div>
     </section>
 
-    <section class="grid items-center gap-10 lg:grid-cols-2">
-        <div class="glass-card overflow-hidden rounded-[1.8rem] p-3 reveal-up">
+    <section class="grid items-center gap-10 lg:grid-cols-2 soft-reveal" data-reveal-delay="1">
+        <div class="glass-card live-tilt image-glow overflow-hidden rounded-[1.8rem] p-3">
             <img
-                src="{{ media_url('home_about_image', asset('images/home-about.jpg')) }}"
-                alt="{{ media_alt('home_about_image', 'About Glamhouse image') }}"
+                src="{{ $homeAboutMedia['url'] }}"
+                alt="{{ $homeAboutMedia['alt'] }}"
                 class="h-[460px] w-full rounded-[1.35rem] object-cover"
             >
         </div>
 
-        <div class="reveal-up delay-1">
+        <div class="soft-reveal" data-reveal-delay="2">
             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-rosegold-700">Artist Philosophy</p>
             <h2 class="font-display mt-3 text-4xl text-[#2c1d1a] sm:text-5xl">Tailored Beauty With Intention</h2>
             <p class="mt-5 text-base leading-relaxed text-black/70">
@@ -151,7 +265,7 @@
         </div>
     </section>
 
-    <section>
+    <section class="soft-reveal" data-reveal-delay="1">
         <div class="mb-8 flex flex-wrap items-end justify-between gap-4">
             <div>
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-rosegold-700">Services</p>
@@ -166,7 +280,7 @@
         @if($services->count())
             <div class="grid gap-4 lg:grid-cols-2">
                 @foreach($services as $service)
-                    <article class="glass-card reveal-up rounded-3xl p-6">
+                    <article class="glass-card live-tilt soft-reveal rounded-3xl p-6" data-reveal-delay="1">
                         <div class="flex items-start justify-between gap-4">
                             <div>
                                 <div class="text-xs font-semibold uppercase tracking-[0.2em] text-rosegold-700">Package</div>
@@ -190,7 +304,7 @@
         @endif
     </section>
 
-    <section>
+    <section class="soft-reveal" data-reveal-delay="1">
         <div class="mb-8">
             <p class="text-xs font-semibold uppercase tracking-[0.24em] text-rosegold-700">Portfolio</p>
             <h2 class="font-display mt-2 text-4xl text-[#2c1d1a] sm:text-5xl">Recent Looks</h2>
@@ -199,7 +313,7 @@
 
         <div class="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
             @forelse($featuredPortfolio as $item)
-                <article class="glass-card group overflow-hidden rounded-3xl reveal-up">
+                <article class="glass-card live-tilt image-glow group overflow-hidden rounded-3xl soft-reveal" data-reveal-delay="1">
                     <img
                         src="{{ asset('storage/'.$item->image_path) }}"
                         alt="{{ $item->title ?? 'Portfolio image' }}"
@@ -211,42 +325,42 @@
                     </div>
                 </article>
             @empty
-                <div class="glass-card overflow-hidden rounded-3xl reveal-up">
-                    <img src="{{ media_url('home_portfolio_1', asset('images/home-portfolio-1.jpg')) }}" alt="Portfolio preview" class="h-72 w-full object-cover">
+                <div class="glass-card live-tilt image-glow overflow-hidden rounded-3xl soft-reveal" data-reveal-delay="1">
+                    <img src="{{ $homePortfolioFallbackOne['url'] }}" alt="{{ $homePortfolioFallbackOne['alt'] }}" class="h-72 w-full object-cover">
                 </div>
-                <div class="glass-card overflow-hidden rounded-3xl reveal-up delay-1">
-                    <img src="{{ media_url('home_portfolio_2', asset('images/home-portfolio-2.jpg')) }}" alt="Portfolio preview" class="h-72 w-full object-cover">
+                <div class="glass-card live-tilt image-glow overflow-hidden rounded-3xl soft-reveal" data-reveal-delay="2">
+                    <img src="{{ $homePortfolioFallbackTwo['url'] }}" alt="{{ $homePortfolioFallbackTwo['alt'] }}" class="h-72 w-full object-cover">
                 </div>
-                <div class="glass-card overflow-hidden rounded-3xl reveal-up delay-2">
-                    <img src="{{ media_url('home_portfolio_3', asset('images/home-portfolio-3.jpg')) }}" alt="Portfolio preview" class="h-72 w-full object-cover">
+                <div class="glass-card live-tilt image-glow overflow-hidden rounded-3xl soft-reveal" data-reveal-delay="3">
+                    <img src="{{ $homePortfolioFallbackThree['url'] }}" alt="{{ $homePortfolioFallbackThree['alt'] }}" class="h-72 w-full object-cover">
                 </div>
-                <div class="glass-card overflow-hidden rounded-3xl reveal-up delay-3">
-                    <img src="{{ media_url('home_portfolio_4', asset('images/home-portfolio-4.jpg')) }}" alt="Portfolio preview" class="h-72 w-full object-cover">
+                <div class="glass-card live-tilt image-glow overflow-hidden rounded-3xl soft-reveal" data-reveal-delay="3">
+                    <img src="{{ $homePortfolioFallbackFour['url'] }}" alt="{{ $homePortfolioFallbackFour['alt'] }}" class="h-72 w-full object-cover">
                 </div>
             @endforelse
         </div>
     </section>
 
-    <section class="rounded-[2rem] border border-rosegold-200 bg-[linear-gradient(130deg,#fffaf8_0%,#fff1ec_46%,#fffefd_100%)] p-6 sm:p-8 lg:p-10">
+    <section class="rounded-[2rem] border border-rosegold-200 bg-[linear-gradient(130deg,#fffaf8_0%,#fff1ec_46%,#fffefd_100%)] p-6 sm:p-8 lg:p-10 soft-reveal" data-reveal-delay="1">
         <p class="text-xs font-semibold uppercase tracking-[0.24em] text-rosegold-700">Testimonials</p>
         <h2 class="font-display mt-2 text-4xl text-[#2c1d1a] sm:text-5xl">Client Experience</h2>
 
         <div class="mt-7 grid gap-4 md:grid-cols-3">
             @forelse($testimonials as $testimonial)
-                <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm">
+                <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm soft-reveal" data-reveal-delay="1">
                     <p class="text-base leading-relaxed text-black/70">"{{ $testimonial->content }}"</p>
                     <div class="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#2c1d1a]">{{ $testimonial->client_name }}</div>
                 </article>
             @empty
-                <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm">
+                <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm soft-reveal" data-reveal-delay="1">
                     <p class="text-base leading-relaxed text-black/70">"Beautiful work, calm experience, and my makeup lasted perfectly."</p>
                     <div class="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#2c1d1a]">Client Testimonial</div>
                 </article>
-                <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm">
+                <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm soft-reveal" data-reveal-delay="2">
                     <p class="text-base leading-relaxed text-black/70">"The look felt natural, elegant, and perfect for camera."</p>
                     <div class="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#2c1d1a]">Client Testimonial</div>
                 </article>
-                <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm">
+                <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm soft-reveal" data-reveal-delay="3">
                     <p class="text-base leading-relaxed text-black/70">"Professional, warm, and detail-oriented from start to finish."</p>
                     <div class="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#2c1d1a]">Client Testimonial</div>
                 </article>
@@ -254,7 +368,7 @@
         </div>
     </section>
 
-    <section class="overflow-hidden rounded-[2rem] bg-[linear-gradient(140deg,#231715_0%,#54333a_58%,#8f3a4e_100%)] text-white">
+    <section class="overflow-hidden rounded-[2rem] bg-[linear-gradient(140deg,#231715_0%,#54333a_58%,#8f3a4e_100%)] text-white soft-reveal" data-reveal-delay="1">
         <div class="grid items-center gap-8 md:grid-cols-2">
             <div class="p-8 sm:p-10 lg:p-12">
                 <p class="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">Bookings Open</p>
@@ -268,10 +382,10 @@
                 </div>
             </div>
 
-            <div class="relative h-full min-h-[320px]">
+            <div class="relative h-full min-h-[320px] live-tilt image-glow">
                 <img
-                    src="{{ media_url('home_cta_image', asset('images/home-cta.jpg')) }}"
-                    alt="{{ media_alt('home_cta_image', 'Booking call to action image') }}"
+                    src="{{ $homeCtaMedia['url'] }}"
+                    alt="{{ $homeCtaMedia['alt'] }}"
                     class="h-full w-full object-cover opacity-85"
                 >
                 <div class="absolute inset-0 bg-gradient-to-r from-transparent via-transparent to-black/20"></div>
