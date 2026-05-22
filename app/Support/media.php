@@ -1,10 +1,28 @@
 <?php
 
 use App\Models\MediaAsset;
+use Illuminate\Support\Facades\Schema;
+
+if (! function_exists('media_assets_table_exists')) {
+    function media_assets_table_exists(): bool
+    {
+        static $exists;
+
+        if ($exists === null) {
+            $exists = Schema::hasTable('media_assets');
+        }
+
+        return $exists;
+    }
+}
 
 if (! function_exists('media_url')) {
     function media_url(string $key, ?string $fallback = null): string
     {
+        if (! media_assets_table_exists()) {
+            return $fallback ?? '';
+        }
+
         $asset = MediaAsset::query()
             ->where('key', $key)
             ->where('is_active', true)
@@ -22,6 +40,10 @@ if (! function_exists('media_url')) {
 if (! function_exists('media_alt')) {
     function media_alt(string $key, string $default = ''): string
     {
+        if (! media_assets_table_exists()) {
+            return $default;
+        }
+
         $asset = MediaAsset::query()
             ->where('key', $key)
             ->where('is_active', true)
@@ -42,7 +64,7 @@ if (! function_exists('media_pool')) {
         $keys = array_values(array_filter(array_map(static fn ($key) => is_string($key) ? trim($key) : '', $keys)));
         $fallbacks = array_values(array_filter(array_map(static fn ($url) => is_string($url) ? trim($url) : '', $fallbacks)));
 
-        if ($keys !== []) {
+        if ($keys !== [] && media_assets_table_exists()) {
             $assets = MediaAsset::query()
                 ->whereIn('key', $keys)
                 ->where('is_active', true)
