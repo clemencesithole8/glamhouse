@@ -32,8 +32,8 @@ Route::post('/booking', [BookingController::class, 'store'])->name('booking.stor
 
 Route::get('/availability', [AvailabilityController::class, 'index'])->name('availability.index');
 
-// PDF download for client/admin (tokenless version below; can be locked down later)
-Route::get('/booking/{booking}/pdf', [BookingPdfController::class, 'show'])->name('booking.pdf');
+// PDF download for signed links, the booking owner, or admins.
+Route::get('/booking/{bookingId}/pdf', [BookingPdfController::class, 'show'])->name('booking.pdf');
 
 Route::middleware('auth')->group(function () {
     Route::get('/dashboard', DashboardController::class)->name('dashboard');

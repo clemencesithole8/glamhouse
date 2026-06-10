@@ -6,13 +6,7 @@ use Illuminate\Support\Facades\Schema;
 if (! function_exists('media_assets_table_exists')) {
     function media_assets_table_exists(): bool
     {
-        static $exists;
-
-        if ($exists === null) {
-            $exists = Schema::hasTable('media_assets');
-        }
-
-        return $exists;
+        return Schema::hasTable('media_assets');
     }
 }
 

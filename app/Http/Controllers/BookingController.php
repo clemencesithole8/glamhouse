@@ -9,14 +9,20 @@ use App\Notifications\BookingSubmittedClientNotification;
 use App\Notifications\BookingSubmittedAdminNotification;
 use App\Services\WhatsAppNotifier;
 use Illuminate\Support\Facades\Notification;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\URL;
 
 class BookingController extends Controller
 {
     public function create()
     {
         return view('booking.create', [
-            'services' => Service::where('is_active', true)->get(),
-            'timeSlots' => TimeSlot::where('is_active', true)->orderBy('start_time')->get(),
+            'services' => Schema::hasTable('services')
+                ? Service::where('is_active', true)->get()
+                : collect(),
+            'timeSlots' => Schema::hasTable('time_slots')
+                ? TimeSlot::where('is_active', true)->orderBy('start_time')->get()
+                : collect(),
         ]);
     }
 
@@ -24,13 +30,19 @@ class BookingController extends Controller
     {
         $data = $request->validated();
 
+        if (! Schema::hasTable('bookings') || ! Schema::hasTable('services')) {
+            return back()
+                ->withInput()
+                ->withErrors(['service_id' => 'Online booking is still being prepared. Please try again shortly.']);
+        }
+
         // Store upload if present
         if ($request->hasFile('reference_look')) {
             $data['reference_image_path'] = $request->file('reference_look')->store('reference-looks', 'public');
         }
 
         // Conflict prevention: if time_slot_id selected, ensure no pending/confirmed booking exists
-        if (!empty($data['time_slot_id'])) {
+        if (!empty($data['time_slot_id']) && Schema::hasTable('time_slots')) {
             $conflict = Booking::query()
                 ->whereDate('appointment_date', $data['appointment_date'])
                 ->where('time_slot_id', $data['time_slot_id'])
@@ -66,7 +78,7 @@ class BookingController extends Controller
         );
 
         return redirect()
-            ->route('booking.pdf', $booking)
+            ->to(URL::temporarySignedRoute('booking.pdf', now()->addHours(24), ['bookingId' => $booking->id]))
             ->with('success', 'Booking submitted! You can download your booking summary PDF below.');
     }
 }

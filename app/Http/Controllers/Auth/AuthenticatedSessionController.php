@@ -31,10 +31,10 @@ class AuthenticatedSessionController extends Controller
         $user = $request->user();
 
         return redirect()->intended(
-    $user && $user->is_admin
-        ? route('admin.dashboard')
-        : route('dashboard')
-);
+            $user && $user->is_admin
+                ? route('admin.dashboard')
+                : route('dashboard')
+        );
     }
 
     /**

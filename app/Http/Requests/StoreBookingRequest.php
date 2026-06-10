@@ -2,6 +2,7 @@
 namespace App\Http\Requests;
 
 use Illuminate\Foundation\Http\FormRequest;
+use Illuminate\Support\Facades\Schema;
 
 class StoreBookingRequest extends FormRequest
 {
@@ -12,6 +13,17 @@ class StoreBookingRequest extends FormRequest
 
     public function rules(): array
     {
+        $serviceRules = ['required','integer'];
+        $timeSlotRules = ['nullable','integer'];
+
+        if (Schema::hasTable('services')) {
+            $serviceRules[] = 'exists:services,id';
+        }
+
+        if (Schema::hasTable('time_slots')) {
+            $timeSlotRules[] = 'exists:time_slots,id';
+        }
+
         return [
             // Client
             'full_name' => ['required','string','max:255'],
@@ -21,9 +33,9 @@ class StoreBookingRequest extends FormRequest
 
             // Booking
             'appointment_date' => ['required','date','after_or_equal:today'],
-            'time_slot_id' => ['nullable','integer','exists:time_slots,id'],
+            'time_slot_id' => $timeSlotRules,
             'preferred_time_text' => ['nullable','string','max:100'],
-            'service_id' => ['required','integer','exists:services,id'],
+            'service_id' => $serviceRules,
 
             // Event
             'event_type' => ['nullable','string','max:255'],

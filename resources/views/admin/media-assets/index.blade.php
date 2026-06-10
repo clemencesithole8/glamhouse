@@ -68,6 +68,9 @@
         <div class="mb-3 text-sm font-semibold">Suggested keys</div>
         <div class="grid gap-2 text-xs font-mono text-black/75 md:grid-cols-2 lg:grid-cols-3">
             <div>home_hero</div>
+            <div>home_hero_slide_1</div>
+            <div>home_hero_slide_2</div>
+            <div>home_hero_slide_3</div>
             <div>home_feature_1</div>
             <div>home_feature_2</div>
             <div>home_feature_3</div>

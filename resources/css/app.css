@@ -222,6 +222,85 @@
     transform: translateX(35%);
   }
 
+  .hero-slider {
+    --hero-slider-duration: 6200ms;
+  }
+
+  .hero-slide {
+    position: absolute;
+    inset: 0;
+    opacity: 0;
+    transform: scale(1.025);
+    transition: opacity 760ms ease, transform 1200ms ease;
+  }
+
+  .hero-slide.is-active {
+    opacity: 1;
+    transform: scale(1);
+    z-index: 1;
+  }
+
+  .hero-slider-control {
+    position: absolute;
+    top: 50%;
+    z-index: 3;
+    display: inline-flex;
+    height: 2.75rem;
+    width: 2.75rem;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    border-radius: 9999px;
+    background: rgba(255, 255, 255, 0.78);
+    color: var(--site-ink);
+    box-shadow: 0 14px 26px rgba(36, 25, 21, 0.16);
+    transform: translateY(-50%);
+    transition: background-color 180ms ease, transform 180ms ease, color 180ms ease;
+  }
+
+  .hero-slider-control:hover,
+  .hero-slider-control:focus-visible {
+    background: #fff;
+    color: var(--site-accent-deep);
+    transform: translateY(-50%) scale(1.04);
+  }
+
+  .hero-slider-control:focus-visible {
+    outline: 2px solid rgba(185, 83, 106, 0.55);
+    outline-offset: 2px;
+  }
+
+  .hero-slider-dot {
+    height: 0.62rem;
+    width: 0.62rem;
+    border-radius: 9999px;
+    background: rgba(36, 25, 21, 0.24);
+    transition: width 220ms ease, background-color 220ms ease;
+  }
+
+  .hero-slider-dot.is-active {
+    width: 1.75rem;
+    background: var(--site-accent-deep);
+  }
+
+  .hero-slider-dot:focus-visible {
+    outline: 2px solid rgba(185, 83, 106, 0.55);
+    outline-offset: 3px;
+  }
+
+  .hero-slider-progress {
+    height: 0.28rem;
+    width: 100%;
+    border-radius: 9999px;
+    background: linear-gradient(90deg, var(--site-accent-deep), #d88a8e);
+    transform: scaleX(0);
+    transform-origin: left;
+  }
+
+  .hero-slider-progress.is-running {
+    animation: heroSliderProgress var(--hero-slider-duration) linear both;
+  }
+
   .js-motion .soft-reveal {
     opacity: 0;
     transform: translateY(20px) scale(0.99);
@@ -283,6 +362,15 @@
   }
 }
 
+@keyframes heroSliderProgress {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .reveal-up,
   .delay-1,
@@ -306,6 +394,15 @@
 
   .image-glow::after {
     display: none;
+  }
+
+  .hero-slide {
+    transition: none;
+  }
+
+  .hero-slider-progress.is-running {
+    animation: none;
+    transform: scaleX(1);
   }
 }
 

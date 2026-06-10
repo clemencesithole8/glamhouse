@@ -184,6 +184,7 @@
                             <a class="site-link w-max" href="{{ route('policies') }}">Policies</a>
                             <a class="site-link w-max" href="{{ route('faq') }}">FAQ</a>
                             <a class="site-link w-max" href="{{ route('contact') }}">Contact</a>
+                            <a class="site-link w-max" href="{{ route('admin.dashboard') }}">Admin Panel</a>
                         </div>
                     </div>
                 </div>

@@ -32,6 +32,103 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  const sliders = Array.from(document.querySelectorAll('[data-image-slider]'));
+
+  sliders.forEach((slider) => {
+    const slides = Array.from(slider.querySelectorAll('[data-slider-slide]'));
+    const dots = Array.from(slider.querySelectorAll('[data-slider-dot]'));
+    const previousButton = slider.querySelector('[data-slider-prev]');
+    const nextButton = slider.querySelector('[data-slider-next]');
+    const progress = slider.querySelector('[data-slider-progress]');
+    const interval = Number.parseInt(slider.dataset.sliderInterval || '6200', 10);
+    const safeInterval = Number.isFinite(interval) && interval >= 3000 ? interval : 6200;
+
+    if (slides.length <= 1) {
+      previousButton?.setAttribute('hidden', '');
+      nextButton?.setAttribute('hidden', '');
+      dots.forEach((dot) => dot.setAttribute('hidden', ''));
+      return;
+    }
+
+    slider.style.setProperty('--hero-slider-duration', `${safeInterval}ms`);
+
+    let currentIndex = Math.max(0, slides.findIndex((slide) => slide.classList.contains('is-active')));
+    let autoTimer = 0;
+
+    const restartProgress = () => {
+      if (!progress || prefersReducedMotion) {
+        return;
+      }
+
+      progress.classList.remove('is-running');
+      void progress.offsetWidth;
+      progress.classList.add('is-running');
+    };
+
+    const setSlide = (nextIndex) => {
+      currentIndex = (nextIndex + slides.length) % slides.length;
+
+      slides.forEach((slide, index) => {
+        const isActive = index === currentIndex;
+        slide.classList.toggle('is-active', isActive);
+        slide.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+      });
+
+      dots.forEach((dot, index) => {
+        const isActive = index === currentIndex;
+        dot.classList.toggle('is-active', isActive);
+        dot.setAttribute('aria-selected', isActive ? 'true' : 'false');
+      });
+
+      restartProgress();
+    };
+
+    const stopAuto = () => {
+      window.clearInterval(autoTimer);
+      autoTimer = 0;
+    };
+
+    const startAuto = () => {
+      if (prefersReducedMotion || autoTimer) {
+        return;
+      }
+
+      restartProgress();
+      autoTimer = window.setInterval(() => {
+        setSlide(currentIndex + 1);
+      }, safeInterval);
+    };
+
+    previousButton?.addEventListener('click', () => {
+      stopAuto();
+      setSlide(currentIndex - 1);
+      startAuto();
+    });
+
+    nextButton?.addEventListener('click', () => {
+      stopAuto();
+      setSlide(currentIndex + 1);
+      startAuto();
+    });
+
+    dots.forEach((dot) => {
+      dot.addEventListener('click', () => {
+        stopAuto();
+        setSlide(Number.parseInt(dot.dataset.sliderDot || '0', 10));
+        startAuto();
+      });
+    });
+
+    slider.addEventListener('mouseenter', stopAuto);
+    slider.addEventListener('mouseleave', startAuto);
+    slider.addEventListener('focusin', stopAuto);
+    slider.addEventListener('focusout', startAuto);
+
+    setSlide(currentIndex);
+    startAuto();
+  });
+
   const revealNodes = Array.from(document.querySelectorAll('.soft-reveal'));
 
   if (prefersReducedMotion) {

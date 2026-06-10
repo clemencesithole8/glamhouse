@@ -4,17 +4,35 @@
 
 @section('content')
 @php
-    $homeHeroMedia = media_pool(
-        ['home_hero', 'home_about_image', 'home_feature_1', 'home_feature_2', 'home_feature_3'],
+    $homeHeroSlides = [
         [
-            asset('images/home-hero-fallback.jpg'),
-            asset('images/home-about.jpg'),
-            asset('images/home-feature-1.jpg'),
-            asset('images/home-feature-2.jpg'),
-            asset('images/home-feature-3.jpg'),
+            'eyebrow' => 'Signature Bridal Glow',
+            'caption' => 'Soft, dimensional skin work made for close-up moments and all-day wear.',
+            'media' => media_pool(
+                ['home_hero_slide_1', 'home_hero'],
+                [asset('images/home-hero-fallback.jpg')],
+                'Bridal glam makeup by Esther\'s Secrets Glamhouse'
+            ),
         ],
-        'Glamhouse hero image'
-    );
+        [
+            'eyebrow' => 'Editorial Soft Glam',
+            'caption' => 'Polished detail, balanced color, and a finish that photographs beautifully.',
+            'media' => media_pool(
+                ['home_hero_slide_2', 'home_feature_1'],
+                [asset('images/home-feature-1.jpg')],
+                'Editorial soft glam makeup look'
+            ),
+        ],
+        [
+            'eyebrow' => 'Event-Ready Finish',
+            'caption' => 'Elegant makeup tailored to your features, lighting, outfit, and occasion.',
+            'media' => media_pool(
+                ['home_hero_slide_3', 'home_feature_2', 'home_feature_3'],
+                [asset('images/home-feature-2.jpg'), asset('images/home-feature-3.jpg')],
+                'Event makeup look by Esther\'s Secrets Glamhouse'
+            ),
+        ],
+    ];
 
     $homeFeatureMainMedia = media_pool(
         ['home_feature_1', 'home_feature_2', 'home_feature_3', 'home_hero'],
@@ -154,12 +172,70 @@
             </div>
 
             <div class="soft-reveal" data-reveal-delay="1">
-                <div class="glass-card live-tilt image-glow overflow-hidden rounded-[1.8rem] p-3">
-                    <img
-                        src="{{ $homeHeroMedia['url'] }}"
-                        alt="{{ $homeHeroMedia['alt'] }}"
-                        class="h-[560px] w-full rounded-[1.35rem] object-cover"
-                    >
+                <div
+                    class="hero-slider glass-card live-tilt image-glow overflow-hidden rounded-[1.8rem] p-3"
+                    data-image-slider
+                    data-slider-interval="6200"
+                    aria-label="Featured glam looks"
+                >
+                    <div class="relative h-[440px] overflow-hidden rounded-[1.35rem] sm:h-[520px] lg:h-[560px]">
+                        @foreach($homeHeroSlides as $index => $slide)
+                            <figure
+                                class="hero-slide {{ $index === 0 ? 'is-active' : '' }}"
+                                data-slider-slide
+                                aria-hidden="{{ $index === 0 ? 'false' : 'true' }}"
+                            >
+                                <img
+                                    src="{{ $slide['media']['url'] }}"
+                                    alt="{{ $slide['media']['alt'] }}"
+                                    class="h-full w-full object-cover"
+                                >
+                                <figcaption class="absolute inset-x-4 bottom-4 rounded-2xl border border-white/20 bg-black/55 p-4 text-white shadow-2xl backdrop-blur-md sm:inset-x-5 sm:bottom-5">
+                                    <div class="text-[0.64rem] font-bold uppercase tracking-[0.22em] text-white/70">{{ $slide['eyebrow'] }}</div>
+                                    <div class="mt-1 max-w-sm text-sm leading-relaxed text-white/90">{{ $slide['caption'] }}</div>
+                                </figcaption>
+                            </figure>
+                        @endforeach
+
+                        <button
+                            type="button"
+                            class="hero-slider-control left-3"
+                            data-slider-prev
+                            aria-label="Previous featured image"
+                        >
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+                                <path d="m15 18-6-6 6-6" />
+                            </svg>
+                        </button>
+                        <button
+                            type="button"
+                            class="hero-slider-control right-3"
+                            data-slider-next
+                            aria-label="Next featured image"
+                        >
+                            <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" aria-hidden="true">
+                                <path d="m9 18 6-6-6-6" />
+                            </svg>
+                        </button>
+                    </div>
+
+                    <div class="mt-3 flex items-center justify-between gap-4 px-1">
+                        <div class="flex gap-2" role="tablist" aria-label="Featured image slides">
+                            @foreach($homeHeroSlides as $index => $slide)
+                                <button
+                                    type="button"
+                                    class="hero-slider-dot {{ $index === 0 ? 'is-active' : '' }}"
+                                    data-slider-dot="{{ $index }}"
+                                    role="tab"
+                                    aria-label="Show slide {{ $index + 1 }}"
+                                    aria-selected="{{ $index === 0 ? 'true' : 'false' }}"
+                                ></button>
+                            @endforeach
+                        </div>
+                        <div class="hidden min-w-32 overflow-hidden rounded-full bg-black/10 sm:block">
+                            <div class="hero-slider-progress" data-slider-progress></div>
+                        </div>
+                    </div>
                 </div>
 
                 <div class="mt-4 grid grid-cols-2 gap-3">

@@ -7,14 +7,15 @@ use App\Models\PortfolioItem;
 use App\Models\Service;
 use Illuminate\Http\Response;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Schema;
 
 class SitemapController extends Controller
 {
     public function __invoke(): Response
     {
         $latestContentUpdate = collect([
-            Service::query()->max('updated_at'),
-            PortfolioItem::query()->max('updated_at'),
+            Schema::hasTable('services') ? Service::query()->max('updated_at') : null,
+            Schema::hasTable('portfolio_items') ? PortfolioItem::query()->max('updated_at') : null,
         ])->filter()->max();
 
         $lastmod = $latestContentUpdate

@@ -28,4 +28,18 @@ class RegistrationTest extends TestCase
         $this->assertAuthenticated();
         $response->assertRedirect(route('dashboard', absolute: false));
     }
+
+    public function test_newly_registered_users_are_not_redirected_to_admin(): void
+    {
+        $response = $this->post('/register', [
+            'name' => 'Customer User',
+            'email' => 'customer@example.com',
+            'password' => 'password',
+            'password_confirmation' => 'password',
+        ]);
+
+        $this->assertAuthenticated();
+        $response->assertRedirect(route('dashboard', absolute: false));
+        $this->assertNotSame(route('admin.dashboard', absolute: false), $response->headers->get('Location'));
+    }
 }
