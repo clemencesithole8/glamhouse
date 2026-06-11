@@ -96,6 +96,14 @@
     color: var(--site-accent-deep);
   }
 
+  .mobile-menu-panel {
+    display: none;
+  }
+
+  details[open] > .mobile-menu-panel {
+    display: block;
+  }
+
   .btn-primary {
     background: linear-gradient(145deg, #1f1714 0%, #3f2d28 100%);
     color: #fff;

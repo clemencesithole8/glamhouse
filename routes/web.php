@@ -51,12 +51,12 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::put('/security/password', [AdminSecurityController::class, 'updatePassword'])->name('security.password.update');
 
     Route::get('/bookings', [AdminBookingController::class, 'index'])->name('bookings.index');
-    Route::get('/bookings/{booking}', [AdminBookingController::class, 'show'])->name('bookings.show');
-    Route::post('/bookings/{booking}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.status');
-    Route::post('/bookings/{booking}/cancel', [AdminBookingController::class, 'cancel'])->name('bookings.cancel');
+    Route::get('/bookings/{bookingId}', [AdminBookingController::class, 'show'])->name('bookings.show');
+    Route::post('/bookings/{bookingId}/status', [AdminBookingController::class, 'updateStatus'])->name('bookings.status');
+    Route::post('/bookings/{bookingId}/cancel', [AdminBookingController::class, 'cancel'])->name('bookings.cancel');
 
     Route::get('/payments', [AdminPaymentController::class, 'index'])->name('payments.index');
-    Route::post('/bookings/{booking}/payments', [AdminPaymentController::class, 'store'])->name('payments.store');
+    Route::post('/bookings/{bookingId}/payments', [AdminPaymentController::class, 'store'])->name('payments.store');
 
     Route::get('/media-assets', [AdminMediaAssetController::class, 'index'])->name('media-assets.index');
     Route::get('/media-assets/create', [AdminMediaAssetController::class, 'create'])->name('media-assets.create');

@@ -5,8 +5,10 @@ namespace Tests\Feature;
 use App\Models\Booking;
 use App\Models\Service;
 use App\Models\TimeSlot;
+use App\Models\User;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\URL;
 use Tests\TestCase;
@@ -191,6 +193,128 @@ class FreshInstallTest extends TestCase
             ->assertOk();
     }
 
+    public function test_customer_and_admin_indexes_render_before_booking_tables_exist(): void
+    {
+        $user = User::factory()->create();
+        $admin = User::factory()->create([
+            'is_admin' => true,
+        ]);
+
+        $this->dropBookingTables();
+
+        $this->actingAs($user)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Your booking list is ready.');
+
+        $this->actingAs($admin)
+            ->get('/admin')
+            ->assertOk()
+            ->assertSee('Revenue This Month')
+            ->assertSee('$0');
+
+        $this->actingAs($admin)
+            ->get('/admin/bookings')
+            ->assertOk()
+            ->assertSee('No bookings found for this filter.');
+
+        $this->actingAs($admin)
+            ->get('/admin/payments')
+            ->assertOk()
+            ->assertSee('No payments found for this filter.');
+    }
+
+    public function test_customer_and_admin_booking_views_survive_missing_related_tables(): void
+    {
+        $booking = $this->createBooking();
+        $user = User::factory()->create([
+            'email' => $booking->email,
+        ]);
+        $admin = User::factory()->create([
+            'is_admin' => true,
+        ]);
+
+        $queries = [];
+
+        DB::listen(function ($query) use (&$queries): void {
+            $queries[] = $query->sql;
+        });
+
+        Schema::shouldReceive('hasTable')
+            ->with('bookings')
+            ->andReturn(true);
+        Schema::shouldReceive('hasTable')
+            ->with('services')
+            ->andReturn(false);
+        Schema::shouldReceive('hasTable')
+            ->with('time_slots')
+            ->andReturn(false);
+        Schema::shouldReceive('hasTable')
+            ->with('payments')
+            ->andReturn(false);
+
+        $this->actingAs($user)
+            ->get('/dashboard')
+            ->assertOk()
+            ->assertSee('Glamhouse service')
+            ->assertSee('To be confirmed');
+
+        $this->actingAs($admin)
+            ->get('/admin/bookings')
+            ->assertOk()
+            ->assertSee('Fresh Install Client')
+            ->assertSee('N/A');
+
+        $this->actingAs($admin)
+            ->get(route('admin.bookings.show', $booking))
+            ->assertOk()
+            ->assertSee('Fresh Install Client')
+            ->assertSee('No payments recorded yet.')
+            ->assertSee('Payment recording is unavailable until setup completes.');
+
+        $this->actingAs($admin)
+            ->from(route('admin.bookings.show', $booking))
+            ->post(route('admin.payments.store', $booking), [
+                'type' => 'deposit',
+                'amount' => 50,
+            ])
+            ->assertRedirect(route('admin.bookings.show', $booking))
+            ->assertSessionHasErrors('amount');
+
+        $this->assertFalse(
+            collect($queries)->contains(fn (string $sql): bool => str_contains($sql, '"services"')
+                || str_contains($sql, '"time_slots"')
+                || str_contains($sql, '"payments"')),
+            'Expected missing related tables not to be queried.'
+        );
+    }
+
+    public function test_admin_booking_member_routes_404_before_bookings_table_exists(): void
+    {
+        $admin = User::factory()->create([
+            'is_admin' => true,
+        ]);
+
+        $this->dropBookingTables(['payments', 'bookings']);
+
+        $this->actingAs($admin)
+            ->get('/admin/bookings/1')
+            ->assertNotFound();
+
+        $this->actingAs($admin)
+            ->post('/admin/bookings/1/status', [
+                'status' => 'confirmed',
+            ])
+            ->assertNotFound();
+
+        $this->actingAs($admin)
+            ->post('/admin/bookings/1/payments', [
+                'type' => 'deposit',
+                'amount' => 50,
+            ])
+            ->assertNotFound();
+    }
+
     private function createBooking(): Booking
     {
         $service = Service::create([
@@ -215,5 +339,18 @@ class FreshInstallTest extends TestCase
             'info_confirmed' => true,
             'status' => 'pending',
         ]);
+    }
+
+    private function dropBookingTables(array $tables = ['payments', 'bookings', 'time_slots', 'services']): void
+    {
+        Schema::disableForeignKeyConstraints();
+
+        try {
+            foreach ($tables as $table) {
+                Schema::dropIfExists($table);
+            }
+        } finally {
+            Schema::enableForeignKeyConstraints();
+        }
     }
 }

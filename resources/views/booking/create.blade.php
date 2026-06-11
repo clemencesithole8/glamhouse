@@ -2,6 +2,13 @@
 @section('title', 'Book - Glamhouse')
 
 @section('content')
+@php
+    $business = config('seo.business', []);
+    $publicPhone = trim((string) ($business['phone'] ?? '')) ?: '+263784721479';
+    $whatsappNumber = preg_replace('/\D+/', '', $publicPhone) ?: '263784721479';
+    $whatsappUrl = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode('Hi Glamhouse, I found you on Google and would like to book a makeup appointment in Harare.');
+@endphp
+
 <div class="mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-6 lg:px-8">
     <section class="grid gap-8 lg:grid-cols-[1fr_320px] xl:grid-cols-[1fr_360px]">
         <div class="space-y-6">
@@ -17,16 +24,16 @@
 
                 <div class="relative mt-6 grid gap-3 sm:grid-cols-3">
                     <div class="rounded-2xl border border-black/10 bg-white/85 px-4 py-3 text-sm">
+                        <div class="text-xs uppercase tracking-[0.14em] text-black/55">Location</div>
+                        <div class="mt-1 font-semibold">Harare studio + outcall</div>
+                    </div>
+                    <div class="rounded-2xl border border-black/10 bg-white/85 px-4 py-3 text-sm">
                         <div class="text-xs uppercase tracking-[0.14em] text-black/55">Step 1</div>
                         <div class="mt-1 font-semibold">Submit Details</div>
                     </div>
                     <div class="rounded-2xl border border-black/10 bg-white/85 px-4 py-3 text-sm">
                         <div class="text-xs uppercase tracking-[0.14em] text-black/55">Step 2</div>
-                        <div class="mt-1 font-semibold">Team Review</div>
-                    </div>
-                    <div class="rounded-2xl border border-black/10 bg-white/85 px-4 py-3 text-sm">
-                        <div class="text-xs uppercase tracking-[0.14em] text-black/55">Step 3</div>
-                        <div class="mt-1 font-semibold">Booking Confirmed</div>
+                        <div class="mt-1 font-semibold">Confirmation Follow-up</div>
                     </div>
                 </div>
             </article>
@@ -67,7 +74,7 @@
 
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Location / Area *</label>
-                            <input name="location_area" value="{{ old('location_area') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
+                            <input name="location_area" value="{{ old('location_area') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="e.g., Avondale, Borrowdale, CBD" required>
                             @error('location_area')<div class="mt-1 text-sm text-red-600">{{ $message }}</div>@enderror
                         </div>
                     </div>
@@ -216,7 +223,7 @@
 
             <article class="rounded-3xl border border-black/10 bg-white p-5">
                 <div class="text-xs uppercase tracking-[0.14em] text-black/55">Need Help Fast?</div>
-                <a href="https://wa.me/263784721479" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex w-full items-center justify-center rounded-full bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700">
+                <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex w-full items-center justify-center rounded-full bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700">
                     Chat on WhatsApp
                 </a>
                 <a href="mailto:esther2026@gmail.com" class="mt-2 inline-flex w-full items-center justify-center rounded-full border border-black/15 px-4 py-2.5 text-sm font-semibold transition hover:bg-black hover:text-white">

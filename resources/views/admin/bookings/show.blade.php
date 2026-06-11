@@ -92,32 +92,38 @@
 
             <div class="mt-6 border-t border-black/10 pt-5">
                 <h4 class="font-semibold">Record Payment</h4>
-                <form method="POST" action="{{ route('admin.payments.store', $booking) }}" class="mt-3 grid gap-3 md:grid-cols-2">
-                    @csrf
-                    <div>
-                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Type</label>
-                        <select name="type" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
-                            <option value="deposit">Deposit</option>
-                            <option value="balance">Balance</option>
-                            <option value="full">Full</option>
-                        </select>
+                @if ($canRecordPayments)
+                    <form method="POST" action="{{ route('admin.payments.store', $booking) }}" class="mt-3 grid gap-3 md:grid-cols-2">
+                        @csrf
+                        <div>
+                            <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Type</label>
+                            <select name="type" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
+                                <option value="deposit">Deposit</option>
+                                <option value="balance">Balance</option>
+                                <option value="full">Full</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Amount</label>
+                            <input type="number" name="amount" min="1" required class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Amount">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Method</label>
+                            <input type="text" name="method" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Cash / Bank / Transfer">
+                        </div>
+                        <div>
+                            <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Reference</label>
+                            <input type="text" name="reference" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Transaction ID">
+                        </div>
+                        <div class="md:col-span-2">
+                            <button class="btn-primary text-sm">Save Payment</button>
+                        </div>
+                    </form>
+                @else
+                    <div class="mt-3 rounded-xl border border-dashed border-black/15 px-4 py-4 text-sm text-black/60">
+                        Payment recording is unavailable until setup completes.
                     </div>
-                    <div>
-                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Amount</label>
-                        <input type="number" name="amount" min="1" required class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Amount">
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Method</label>
-                        <input type="text" name="method" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Cash / Bank / Transfer">
-                    </div>
-                    <div>
-                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Reference</label>
-                        <input type="text" name="reference" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Transaction ID">
-                    </div>
-                    <div class="md:col-span-2">
-                        <button class="btn-primary text-sm">Save Payment</button>
-                    </div>
-                </form>
+                @endif
             </div>
         </section>
     </div>

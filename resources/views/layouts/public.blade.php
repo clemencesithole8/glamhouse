@@ -55,6 +55,10 @@
         ];
 
         $schema = array_filter($schema, static fn ($value) => !is_null($value) && $value !== '' && $value !== []);
+
+        $publicPhone = trim((string) ($business['phone'] ?? '')) ?: (string) config('glamhouse.whatsapp_notifications.admin_number', '263784721479');
+        $mobileWhatsappNumber = preg_replace('/\D+/', '', $publicPhone) ?: '263784721479';
+        $mobileWhatsappUrl = 'https://wa.me/'.$mobileWhatsappNumber.'?text='.rawurlencode('Hi Glamhouse, I found you on Google and would like to book a makeup appointment in Harare.');
     @endphp
 
     <meta charset="utf-8">
@@ -133,7 +137,7 @@
                                 <path d="M4 7h16M4 12h16M4 17h16" />
                             </svg>
                         </summary>
-                        <div class="glass-card absolute right-0 mt-3 w-64 rounded-2xl p-3">
+                        <div class="mobile-menu-panel glass-card absolute right-0 mt-3 w-64 rounded-2xl p-3">
                             <div class="grid gap-1 text-sm">
                                 <a class="rounded-xl px-3 py-2 hover:bg-rosegold-50" href="{{ route('home') }}">Home</a>
                                 <a class="rounded-xl px-3 py-2 hover:bg-rosegold-50" href="{{ route('about') }}">About</a>
@@ -149,7 +153,7 @@
             </div>
         </header>
 
-        <main class="pb-12">
+        <main class="pb-28 md:pb-12">
             @if(session('success'))
                 <div class="mx-auto max-w-7xl px-4 pt-6 sm:px-6 lg:px-8">
                     <div class="glass-card rounded-2xl border border-rosegold-200 px-4 py-3 text-sm text-[#5c3437]">
@@ -161,7 +165,22 @@
             @yield('content')
         </main>
 
-        <footer class="mt-16 border-t border-black/10">
+        <div class="fixed inset-x-0 bottom-0 z-50 border-t border-black/10 bg-white/95 px-3 py-3 shadow-[0_-14px_30px_rgba(36,25,21,0.12)] backdrop-blur md:hidden" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
+            <div class="mx-auto max-w-md">
+                <div class="mb-2 flex items-center justify-between gap-3 text-[0.64rem] font-bold uppercase tracking-[0.16em] text-black/50">
+                    <span>Harare, Zimbabwe</span>
+                    <span>Studio + Outcall</span>
+                </div>
+                <div class="grid grid-cols-2 gap-2">
+                    <a href="{{ route('booking.create') }}" class="btn-primary inline-flex items-center justify-center px-4 py-3 text-center text-sm">Book Now</a>
+                    <a href="{{ $mobileWhatsappUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-bold text-green-800 transition hover:bg-green-100">
+                        WhatsApp
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <footer class="mt-16 border-t border-black/10 pb-24 md:pb-0">
             <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
                 <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
                     <div>
