@@ -46,6 +46,16 @@
     </div>
 
     <div class="box">
+        <table>
+            <tr><td class="label">Quoted Total</td><td>{{ $booking->total_amount !== null ? '$'.number_format($booking->total_amount, 0) : 'To be confirmed' }}</td></tr>
+            <tr><td class="label">Deposit</td><td>{{ $booking->deposit_amount !== null ? '$'.number_format($booking->deposit_amount, 0) : 'To be confirmed' }}</td></tr>
+            <tr><td class="label">Total Paid</td><td>${{ number_format($booking->total_paid, 0) }}</td></tr>
+            <tr><td class="label">Balance Due</td><td>{{ $booking->balance_due !== null ? '$'.number_format($booking->balance_due, 0) : 'To be confirmed' }}</td></tr>
+            <tr><td class="label">Payment Status</td><td>{{ $booking->payment_status_label }}</td></tr>
+        </table>
+    </div>
+
+    <div class="box">
         <div><strong>Notes</strong></div>
         <div class="muted">
             Deposit required to secure booking. Late arrival may shorten service time or lead to cancellation without refund.

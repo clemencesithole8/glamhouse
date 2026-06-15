@@ -56,9 +56,7 @@
 
         $schema = array_filter($schema, static fn ($value) => !is_null($value) && $value !== '' && $value !== []);
 
-        $publicPhone = trim((string) ($business['phone'] ?? '')) ?: (string) config('glamhouse.whatsapp_notifications.admin_number', '263784721479');
-        $mobileWhatsappNumber = preg_replace('/\D+/', '', $publicPhone) ?: '263784721479';
-        $mobileWhatsappUrl = 'https://wa.me/'.$mobileWhatsappNumber.'?text='.rawurlencode('Hi Glamhouse, I found you on Google and would like to book a makeup appointment in Harare.');
+        $publicContact = \App\Support\PublicBusinessContact::details();
     @endphp
 
     <meta charset="utf-8">
@@ -168,14 +166,18 @@
         <div class="fixed inset-x-0 bottom-0 z-50 border-t border-black/10 bg-white/95 px-3 py-3 shadow-[0_-14px_30px_rgba(36,25,21,0.12)] backdrop-blur md:hidden" style="padding-bottom: max(0.75rem, env(safe-area-inset-bottom));">
             <div class="mx-auto max-w-md">
                 <div class="mb-2 flex items-center justify-between gap-3 text-[0.64rem] font-bold uppercase tracking-[0.16em] text-black/50">
-                    <span>Harare, Zimbabwe</span>
-                    <span>Studio + Outcall</span>
+                    @if($publicContact['location_display'] !== '')
+                        <span>{{ $publicContact['location_display'] }}</span>
+                    @endif
+                    <span>{{ $publicContact['service_mode'] }}</span>
                 </div>
-                <div class="grid grid-cols-2 gap-2">
+                <div class="grid {{ $publicContact['has_phone'] ? 'grid-cols-2' : 'grid-cols-1' }} gap-2">
                     <a href="{{ route('booking.create') }}" class="btn-primary inline-flex items-center justify-center px-4 py-3 text-center text-sm">Book Now</a>
-                    <a href="{{ $mobileWhatsappUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-bold text-green-800 transition hover:bg-green-100">
-                        WhatsApp
-                    </a>
+                    @if($publicContact['has_phone'])
+                        <a href="{{ $publicContact['whatsapp_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full border border-green-200 bg-green-50 px-4 py-3 text-center text-sm font-bold text-green-800 transition hover:bg-green-100">
+                            WhatsApp
+                        </a>
+                    @endif
                 </div>
             </div>
         </div>

@@ -108,8 +108,12 @@
             @forelse($items as $item)
                 <article class="glass-card live-tilt image-glow overflow-hidden rounded-3xl soft-reveal" data-reveal-delay="1">
                     <img
-                        src="{{ asset('storage/'.$item->image_path) }}"
-                        alt="{{ $item->title ?? 'Portfolio image' }}"
+                        src="{{ $item->imageUrl('thumbnail') }}"
+                        alt="{{ $item->imageAlt() }}"
+                        width="{{ $item->width ?: 520 }}"
+                        height="{{ $item->height ?: 720 }}"
+                        loading="lazy"
+                        decoding="async"
                         class="h-72 w-full object-cover"
                     >
                     <div class="p-4">

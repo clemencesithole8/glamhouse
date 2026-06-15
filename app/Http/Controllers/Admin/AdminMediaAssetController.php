@@ -3,9 +3,10 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\AuditLog;
 use App\Models\MediaAsset;
+use App\Services\ImageOptimizer;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 
 class AdminMediaAssetController extends Controller
 {
@@ -29,28 +30,37 @@ class AdminMediaAssetController extends Controller
         return view('admin.media-assets.create');
     }
 
-    public function store(Request $request)
+    public function store(Request $request, ImageOptimizer $images)
     {
         $data = $request->validate([
             'key' => ['required','string','max:100','regex:/^[a-z0-9_]+$/','unique:media_assets,key'],
             'title' => ['nullable','string','max:255'],
             'alt' => ['nullable','string','max:255'],
             'is_active' => ['required','boolean'],
-            'image' => ['required','file','mimes:jpg,jpeg,png,webp','max:8192'],
+            'image' => ['required','image','mimetypes:image/jpeg,image/png,image/webp','max:8192','dimensions:min_width=200,min_height=200'],
         ], [
             'key.regex' => 'Key must be lowercase letters/numbers/underscores only (e.g. home_hero).',
         ]);
 
-        $path = $request->file('image')->store('media', 'public');
+        $image = $images->store($request->file('image'), 'media');
 
         $asset = MediaAsset::create([
             'key' => $data['key'],
-            'path' => $path,
+            'path' => $image['path'],
+            'webp_path' => $image['webp_path'],
+            'thumbnail_path' => $image['thumbnail_path'],
             'disk' => 'public',
             'title' => $data['title'] ?? null,
             'alt' => $data['alt'] ?? null,
+            'width' => $image['width'],
+            'height' => $image['height'],
+            'mime_type' => $image['mime_type'],
+            'size' => $image['size'],
+            'original_name' => $image['original_name'],
             'is_active' => (bool)$data['is_active'],
         ]);
+
+        AuditLog::record('media.created', $asset, [], $asset->toArray(), 'Media asset created.');
 
         return redirect()->route('admin.media-assets.edit', $asset)->with('success', 'Image asset created.');
     }
@@ -62,27 +72,33 @@ class AdminMediaAssetController extends Controller
         ]);
     }
 
-    public function update(Request $request, MediaAsset $mediaAsset)
+    public function update(Request $request, MediaAsset $mediaAsset, ImageOptimizer $images)
     {
         $data = $request->validate([
             'key' => ['required','string','max:100','regex:/^[a-z0-9_]+$/','unique:media_assets,key,'.$mediaAsset->id],
             'title' => ['nullable','string','max:255'],
             'alt' => ['nullable','string','max:255'],
             'is_active' => ['required','boolean'],
-            'image' => ['nullable','file','mimes:jpg,jpeg,png,webp','max:8192'],
+            'image' => ['nullable','image','mimetypes:image/jpeg,image/png,image/webp','max:8192','dimensions:min_width=200,min_height=200'],
         ], [
             'key.regex' => 'Key must be lowercase letters/numbers/underscores only (e.g. home_hero).',
         ]);
 
-        // Replace image if uploaded
-        if ($request->hasFile('image')) {
-            // delete old file
-            if ($mediaAsset->path && Storage::disk($mediaAsset->disk)->exists($mediaAsset->path)) {
-                Storage::disk($mediaAsset->disk)->delete($mediaAsset->path);
-            }
+        $before = $mediaAsset->getOriginal();
 
-            $mediaAsset->path = $request->file('image')->store('media', 'public');
+        if ($request->hasFile('image')) {
+            $images->deleteStoredImages($mediaAsset->storagePaths(), $mediaAsset->disk);
+            $image = $images->store($request->file('image'), 'media');
+
+            $mediaAsset->path = $image['path'];
+            $mediaAsset->webp_path = $image['webp_path'];
+            $mediaAsset->thumbnail_path = $image['thumbnail_path'];
             $mediaAsset->disk = 'public';
+            $mediaAsset->width = $image['width'];
+            $mediaAsset->height = $image['height'];
+            $mediaAsset->mime_type = $image['mime_type'];
+            $mediaAsset->size = $image['size'];
+            $mediaAsset->original_name = $image['original_name'];
         }
 
         $mediaAsset->key = $data['key'];
@@ -91,16 +107,18 @@ class AdminMediaAssetController extends Controller
         $mediaAsset->is_active = (bool)$data['is_active'];
         $mediaAsset->save();
 
+        AuditLog::record('media.updated', $mediaAsset, $before, $mediaAsset->fresh()->toArray(), 'Media asset updated.');
+
         return back()->with('success', 'Image asset updated.');
     }
 
-    public function destroy(MediaAsset $mediaAsset)
+    public function destroy(MediaAsset $mediaAsset, ImageOptimizer $images)
     {
-        if ($mediaAsset->path && Storage::disk($mediaAsset->disk)->exists($mediaAsset->path)) {
-            Storage::disk($mediaAsset->disk)->delete($mediaAsset->path);
-        }
-
+        $before = $mediaAsset->toArray();
+        $images->deleteStoredImages($mediaAsset->storagePaths(), $mediaAsset->disk);
         $mediaAsset->delete();
+
+        AuditLog::record('media.deleted', null, $before, [], 'Media asset deleted.');
 
         return redirect()->route('admin.media-assets.index')->with('success', 'Image asset deleted.');
     }

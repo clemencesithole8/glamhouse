@@ -12,6 +12,7 @@
 @php
     $statusClasses = match ($booking->status) {
         'pending' => 'bg-amber-100 text-amber-900',
+        'reviewed' => 'bg-violet-100 text-violet-900',
         'confirmed' => 'bg-sky-100 text-sky-900',
         'completed' => 'bg-emerald-100 text-emerald-900',
         'cancelled' => 'bg-rose-100 text-rose-900',
@@ -27,8 +28,18 @@
         <section class="rounded-3xl border border-black/10 bg-white p-6">
             <div class="flex flex-wrap items-center justify-between gap-3">
                 <h2 class="font-display text-3xl text-[#2a1c19]">{{ $booking->full_name }}</h2>
-                <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses }}">{{ ucfirst($booking->status) }}</span>
+                <div class="flex flex-wrap gap-2">
+                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $statusClasses }}">{{ ucfirst($booking->status) }}</span>
+                    <span class="inline-flex rounded-full px-3 py-1 text-xs font-semibold {{ $booking->payment_status_classes }}">{{ $booking->payment_status_label }}</span>
+                </div>
             </div>
+
+            @if ($booking->reschedule_requested_at)
+                <div class="mt-5 rounded-2xl border border-amber-200 bg-amber-50 px-4 py-3 text-sm text-amber-950">
+                    <div class="font-semibold">Client requested a reschedule on {{ $booking->reschedule_requested_at->format('d M Y H:i') }}.</div>
+                    <div class="mt-1">{{ $booking->reschedule_note ?: 'No note provided.' }}</div>
+                </div>
+            @endif
 
             <div class="mt-5 grid gap-4 sm:grid-cols-2">
                 <div>
@@ -70,13 +81,25 @@
             </div>
         </section>
 
+        @if ($booking->admin_notes)
+            @php
+                $hasNotificationAlert = str_contains((string) $booking->admin_notes, '[Notification alert]');
+            @endphp
+            <section class="rounded-3xl border p-6 {{ $hasNotificationAlert ? 'border-amber-200 bg-amber-50' : 'border-black/10 bg-white' }}">
+                <h3 class="font-display text-2xl text-[#2a1c19]">
+                    {{ $hasNotificationAlert ? 'Notification Alert' : 'Admin Notes' }}
+                </h3>
+                <div class="mt-3 whitespace-pre-line text-sm leading-relaxed text-black/70">{{ $booking->admin_notes }}</div>
+            </section>
+        @endif
+
         <section class="rounded-3xl border border-black/10 bg-white p-6">
             <h3 class="font-display text-2xl text-[#2a1c19]">Booking Controls</h3>
 
             <form method="POST" action="{{ route('admin.bookings.status', $booking) }}" class="mt-4 grid gap-3 md:grid-cols-[1fr_auto]">
                 @csrf
                 <select name="status" class="rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
-                    @foreach (['pending', 'confirmed', 'completed', 'cancelled'] as $status)
+                    @foreach (\App\Models\Booking::STATUSES as $status)
                         <option value="{{ $status }}" @selected($booking->status === $status)>{{ ucfirst($status) }}</option>
                     @endforeach
                 </select>
@@ -89,6 +112,22 @@
                     Cancel Booking and Free Slot
                 </button>
             </form>
+
+            <div class="mt-6 border-t border-black/10 pt-5">
+                <h4 class="font-semibold">Quote and Deposit Tracking</h4>
+                <form method="POST" action="{{ route('admin.bookings.financials', $booking) }}" class="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                    @csrf
+                    <div>
+                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Deposit Amount</label>
+                        <input type="number" name="deposit_amount" min="0" value="{{ old('deposit_amount', $booking->deposit_amount) }}" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Deposit">
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Total Quote</label>
+                        <input type="number" name="total_amount" min="0" value="{{ old('total_amount', $booking->total_amount) }}" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Total">
+                    </div>
+                    <button class="btn-outline text-sm">Save Quote</button>
+                </form>
+            </div>
 
             <div class="mt-6 border-t border-black/10 pt-5">
                 <h4 class="font-semibold">Record Payment</h4>
@@ -149,6 +188,10 @@
                     <span>Balance Due</span>
                     <span class="font-bold">{{ $balance !== null ? '$'.number_format($balance, 0) : 'N/A' }}</span>
                 </div>
+                <div class="flex items-center justify-between rounded-xl bg-[#f8f2ec] px-4 py-3">
+                    <span>Payment Status</span>
+                    <span class="rounded-full px-2.5 py-1 text-xs font-semibold {{ $booking->payment_status_classes }}">{{ $booking->payment_status_label }}</span>
+                </div>
             </div>
 
             <h4 class="mt-6 font-semibold">Payment History</h4>
@@ -160,6 +203,7 @@
                             <div class="text-xs text-black/55">{{ optional($payment->paid_at)->format('d M Y H:i') ?: 'Date pending' }}</div>
                         </div>
                         <div class="mt-1 text-xs text-black/60">{{ $payment->method ?: 'Method not set' }}{{ $payment->reference ? ' | Ref: '.$payment->reference : '' }}</div>
+                        <a href="{{ route('payment.receipt', $payment) }}" class="mt-2 inline-flex text-xs font-semibold text-[#8f3a4e] hover:text-[#241915]">Download receipt PDF</a>
                     </div>
                 @empty
                     <div class="rounded-xl border border-dashed border-black/15 px-4 py-4 text-sm text-black/60">No payments recorded yet.</div>

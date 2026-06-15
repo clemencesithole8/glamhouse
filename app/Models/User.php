@@ -31,6 +31,8 @@ class User extends Authenticatable
     protected $hidden = [
         'password',
         'remember_token',
+        'two_factor_secret',
+        'two_factor_recovery_codes',
     ];
 
     /**
@@ -44,6 +46,14 @@ class User extends Authenticatable
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_admin' => 'boolean',
+            'two_factor_secret' => 'encrypted',
+            'two_factor_recovery_codes' => 'encrypted:array',
+            'two_factor_enabled_at' => 'datetime',
         ];
+    }
+
+    public function hasAdminTwoFactorEnabled(): bool
+    {
+        return $this->is_admin && $this->two_factor_secret && $this->two_factor_enabled_at;
     }
 }

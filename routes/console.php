@@ -1,9 +1,13 @@
 <?php
 
+use App\Models\Booking;
 use App\Models\User;
+use App\Notifications\BookingReminderNotification;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Schedule;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\Rules\Password;
 use Symfony\Component\Console\Command\Command;
@@ -93,3 +97,70 @@ Artisan::command('admin:setup {--name=} {--email=} {--password=} {--promote-only
 
     return Command::SUCCESS;
 })->purpose('Create or update admin credentials securely');
+
+Artisan::command('bookings:send-reminders', function () {
+    if (! Schema::hasTable('bookings')) {
+        $this->info('Bookings table is not available.');
+        return Command::SUCCESS;
+    }
+
+    $hasServices = Schema::hasTable('services');
+    $hasTimeSlots = Schema::hasTable('time_slots');
+    $relations = [];
+
+    if ($hasServices) {
+        $relations[] = 'service';
+    }
+
+    if ($hasTimeSlots) {
+        $relations[] = 'timeSlot';
+    }
+
+    $bookings = Booking::query()
+        ->when($relations !== [], fn ($query) => $query->with($relations))
+        ->where('status', 'confirmed')
+        ->whereNull('reminder_sent_at')
+        ->whereNotNull('email')
+        ->whereBetween('appointment_date', [now()->toDateString(), now()->addDays(2)->toDateString()])
+        ->get();
+
+    $sent = 0;
+    $windowStart = now()->addHours(23);
+    $windowEnd = now()->addHours(25);
+    $tomorrow = now()->addDay();
+
+    foreach ($bookings as $booking) {
+        if (! $hasServices) {
+            $booking->setRelation('service', null);
+        }
+
+        if (! $hasTimeSlots) {
+            $booking->setRelation('timeSlot', null);
+        }
+
+        $appointmentAt = $booking->appointmentDateTime();
+
+        if (! $appointmentAt) {
+            continue;
+        }
+
+        $hasExactTime = (bool) $booking->timeSlot;
+        $shouldSend = $hasExactTime
+            ? $appointmentAt->greaterThanOrEqualTo($windowStart) && $appointmentAt->lessThanOrEqualTo($windowEnd)
+            : $appointmentAt->isSameDay($tomorrow);
+
+        if (! $shouldSend) {
+            continue;
+        }
+
+        $booking->notify(new BookingReminderNotification($booking));
+        $booking->forceFill(['reminder_sent_at' => now()])->save();
+        $sent++;
+    }
+
+    $this->info("Sent {$sent} booking reminder(s).");
+
+    return Command::SUCCESS;
+})->purpose('Send client reminder messages around 24 hours before confirmed appointments');
+
+Schedule::command('bookings:send-reminders')->hourly();

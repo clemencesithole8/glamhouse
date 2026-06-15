@@ -133,14 +133,7 @@
         'Portfolio preview'
     );
 
-    $business = config('seo.business', []);
-    $publicPhone = trim((string) ($business['phone'] ?? '')) ?: '+263784721479';
-    $whatsappNumber = preg_replace('/\D+/', '', $publicPhone) ?: '263784721479';
-    $whatsappDisplay = str_starts_with($publicPhone, '+') ? $publicPhone : '+'.$whatsappNumber;
-    $whatsappUrl = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode('Hi Glamhouse, I found you on Google and would like to book a makeup appointment in Harare.');
-    $businessCity = trim((string) ($business['locality'] ?? 'Harare')) ?: 'Harare';
-    $businessCountry = strtoupper(trim((string) ($business['country'] ?? 'ZW'))) === 'ZW' ? 'Zimbabwe' : trim((string) ($business['country'] ?? 'Zimbabwe'));
-    $locationDisplay = $businessCity.', '.$businessCountry;
+    $contact = \App\Support\PublicBusinessContact::details();
 @endphp
 
 <div class="mx-auto max-w-7xl space-y-20 px-4 pb-20 pt-10 sm:px-6 lg:px-8">
@@ -160,31 +153,39 @@
                 </h1>
 
                 <p class="mt-6 max-w-xl text-base leading-relaxed text-black/70 sm:text-lg">
-                    A Harare makeup experience for brides, professionals, creatives, and event guests who want polished skin, sculpted features, and confidence that lasts from first photo to final dance.
+                    {{ $contact['locality'] !== '' ? 'A '.$contact['locality'].' makeup experience' : 'A makeup experience' }} for brides, professionals, creatives, and event guests who want polished skin, sculpted features, and confidence that lasts from first photo to final dance.
                 </p>
 
                 <div class="mt-8 grid max-w-xl gap-3 sm:grid-cols-2">
                     <a href="{{ route('booking.create') }}" class="btn-primary inline-flex items-center justify-center text-center">Book Appointment</a>
-                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full border border-green-200 bg-green-50 px-5 py-3 text-center text-sm font-bold text-green-800 transition hover:bg-green-100">
-                        WhatsApp Availability
-                    </a>
+                    @if($contact['has_phone'])
+                        <a href="{{ $contact['whatsapp_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex items-center justify-center rounded-full border border-green-200 bg-green-50 px-5 py-3 text-center text-sm font-bold text-green-800 transition hover:bg-green-100">
+                            WhatsApp Availability
+                        </a>
+                    @endif
                     <a href="{{ route('picturePerfect') }}" class="btn-outline inline-flex items-center justify-center text-center sm:col-span-2">Explore Picture Perfect Package</a>
                 </div>
-                <p class="mt-3 max-w-xl text-sm text-black/55">Found Glamhouse on Google? The fastest next step is to book a date or WhatsApp your event details.</p>
+                <p class="mt-3 max-w-xl text-sm text-black/55">
+                    Found {{ $contact['business_name'] }} on Google? The fastest next step is to book a date@if($contact['has_phone']) or WhatsApp your event details@endif.
+                </p>
 
                 <div class="mt-8 grid max-w-xl gap-3 sm:grid-cols-3">
-                    <div class="glass-card rounded-2xl p-4 soft-reveal" data-reveal-delay="1">
-                        <div class="text-[0.66rem] font-bold uppercase tracking-[0.16em] text-black/50">Location</div>
-                        <div class="mt-1 text-sm font-extrabold text-[#2c1d1a]">{{ $locationDisplay }}</div>
-                    </div>
+                    @if($contact['location_display'] !== '')
+                        <div class="glass-card rounded-2xl p-4 soft-reveal" data-reveal-delay="1">
+                            <div class="text-[0.66rem] font-bold uppercase tracking-[0.16em] text-black/50">Location</div>
+                            <div class="mt-1 text-sm font-extrabold text-[#2c1d1a]">{{ $contact['location_display'] }}</div>
+                        </div>
+                    @endif
                     <div class="glass-card rounded-2xl p-4 soft-reveal" data-reveal-delay="2">
                         <div class="text-[0.66rem] font-bold uppercase tracking-[0.16em] text-black/50">Appointments</div>
-                        <div class="mt-1 text-sm font-extrabold text-[#2c1d1a]">Studio + Outcall</div>
+                        <div class="mt-1 text-sm font-extrabold text-[#2c1d1a]">{{ $contact['service_mode'] }}</div>
                     </div>
-                    <div class="glass-card rounded-2xl p-4 soft-reveal" data-reveal-delay="3">
-                        <div class="text-[0.66rem] font-bold uppercase tracking-[0.16em] text-black/50">WhatsApp</div>
-                        <div class="mt-1 text-sm font-extrabold text-[#2c1d1a]">{{ $whatsappDisplay }}</div>
-                    </div>
+                    @if($contact['has_phone'])
+                        <div class="glass-card rounded-2xl p-4 soft-reveal" data-reveal-delay="3">
+                            <div class="text-[0.66rem] font-bold uppercase tracking-[0.16em] text-black/50">WhatsApp</div>
+                            <div class="mt-1 text-sm font-extrabold text-[#2c1d1a]">{{ $contact['phone_display'] }}</div>
+                        </div>
+                    @endif
                 </div>
             </div>
 
@@ -408,8 +409,12 @@
             @forelse($featuredPortfolio as $item)
                 <article class="glass-card live-tilt image-glow group overflow-hidden rounded-3xl soft-reveal" data-reveal-delay="1">
                     <img
-                        src="{{ asset('storage/'.$item->image_path) }}"
-                        alt="{{ $item->title ?? 'Portfolio image' }}"
+                        src="{{ $item->imageUrl('thumbnail') }}"
+                        alt="{{ $item->imageAlt() }}"
+                        width="{{ $item->width ?: 520 }}"
+                        height="{{ $item->height ?: 720 }}"
+                        loading="lazy"
+                        decoding="async"
                         class="h-72 w-full object-cover transition duration-500 group-hover:scale-105"
                     >
                     <div class="p-4">
@@ -443,6 +448,12 @@
                 <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm soft-reveal" data-reveal-delay="1">
                     <p class="text-base leading-relaxed text-black/70">"{{ $testimonial->content }}"</p>
                     <div class="mt-5 text-sm font-bold uppercase tracking-[0.16em] text-[#2c1d1a]">{{ $testimonial->client_name }}</div>
+                    @if($testimonial->client_role)
+                        <div class="mt-1 text-xs text-black/55">{{ $testimonial->client_role }}</div>
+                    @endif
+                    @if($testimonial->rating)
+                        <div class="mt-3 text-xs font-semibold text-rosegold-800">{{ $testimonial->rating }}/5 rating</div>
+                    @endif
                 </article>
             @empty
                 <article class="rounded-3xl border border-black/10 bg-white/80 p-6 backdrop-blur-sm soft-reveal" data-reveal-delay="1">
@@ -464,18 +475,22 @@
     <section class="overflow-hidden rounded-[2rem] bg-[linear-gradient(140deg,#231715_0%,#54333a_58%,#8f3a4e_100%)] text-white soft-reveal" data-reveal-delay="1">
         <div class="grid items-center gap-8 md:grid-cols-2">
             <div class="p-8 sm:p-10 lg:p-12">
-                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">Harare Bookings Open</p>
+                <p class="text-xs font-semibold uppercase tracking-[0.24em] text-white/70">{{ $contact['locality'] !== '' ? $contact['locality'].' Bookings Open' : 'Bookings Open' }}</p>
                 <h2 class="font-display mt-3 text-4xl leading-tight sm:text-5xl">Ready for your next look?</h2>
                 <p class="mt-4 text-base leading-relaxed text-white/80">
-                    Book a Harare glam session tailored to your features, your event timeline, and the way you want to be photographed.
+                    {{ $contact['locality'] !== '' ? 'Book a '.$contact['locality'].' glam session' : 'Book a glam session' }} tailored to your features, your event timeline, and the way you want to be photographed.
                 </p>
                 <div class="mt-8 flex flex-wrap gap-3">
                     <a href="{{ route('booking.create') }}" class="inline-flex rounded-full bg-white px-6 py-3 text-sm font-bold text-[#2c1d1a] transition hover:bg-rosegold-100">Book Appointment</a>
-                    <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="inline-flex rounded-full border border-white/45 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">WhatsApp Glamhouse</a>
+                    @if($contact['has_phone'])
+                        <a href="{{ $contact['whatsapp_url'] }}" target="_blank" rel="noopener noreferrer" class="inline-flex rounded-full border border-white/45 px-6 py-3 text-sm font-semibold text-white transition hover:bg-white/10">WhatsApp {{ $contact['business_name'] }}</a>
+                    @endif
                 </div>
                 <div class="mt-5 grid gap-2 text-sm text-white/75 sm:grid-cols-2">
-                    <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3">Based in {{ $locationDisplay }}</div>
-                    <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3">In-studio and outcall sessions available</div>
+                    @if($contact['location_display'] !== '')
+                        <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3">Based in {{ $contact['location_display'] }}</div>
+                    @endif
+                    <div class="rounded-2xl border border-white/15 bg-white/10 px-4 py-3">{{ $contact['service_mode'] }} sessions available</div>
                 </div>
             </div>
 

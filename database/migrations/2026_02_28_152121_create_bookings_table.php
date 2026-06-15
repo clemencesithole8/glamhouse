@@ -40,7 +40,7 @@ return new class extends Migration {
             $table->boolean('info_confirmed')->default(false);
 
             // Status
-            $table->enum('status', ['pending','confirmed','completed','cancelled'])->default('pending');
+            $table->enum('status', ['pending','reviewed','confirmed','completed','cancelled'])->default('pending');
 
             // Money (optional now; useful for admin/revenue tracking)
             $table->unsignedInteger('deposit_amount')->nullable();

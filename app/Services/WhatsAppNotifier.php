@@ -12,6 +12,10 @@ class WhatsAppNotifier
     public function sendNewBookingAlert(Booking $booking): bool
     {
         if (!config('glamhouse.whatsapp_notifications.enabled')) {
+            Log::info('WhatsApp notifier skipped: notifications disabled.', [
+                'booking_id' => $booking->id,
+            ]);
+
             return false;
         }
 
@@ -19,8 +23,18 @@ class WhatsAppNotifier
 
         return match ($provider) {
             'meta' => $this->sendViaMeta($booking),
-            default => false,
+            default => $this->skipUnsupportedProvider((string) $provider, $booking),
         };
+    }
+
+    protected function skipUnsupportedProvider(string $provider, Booking $booking): bool
+    {
+        Log::warning('WhatsApp notifier skipped: unsupported provider configured.', [
+            'booking_id' => $booking->id,
+            'provider' => $provider,
+        ]);
+
+        return false;
     }
 
     protected function sendViaMeta(Booking $booking): bool

@@ -24,11 +24,35 @@
                 <a href="{{ route('admin.bookings.index') }}" class="{{ request()->routeIs('admin.bookings.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
                     Bookings
                 </a>
+                <a href="{{ route('admin.services.index') }}" class="{{ request()->routeIs('admin.services.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Services & Prices
+                </a>
+                <a href="{{ route('admin.time-slots.index') }}" class="{{ request()->routeIs('admin.time-slots.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Time Slots
+                </a>
+                <a href="{{ route('admin.availability-blocks.index') }}" class="{{ request()->routeIs('admin.availability-blocks.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Availability Blocks
+                </a>
+                <a href="{{ route('admin.portfolio-items.index') }}" class="{{ request()->routeIs('admin.portfolio-items.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Portfolio
+                </a>
+                <a href="{{ route('admin.testimonials.index') }}" class="{{ request()->routeIs('admin.testimonials.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Testimonials
+                </a>
+                <a href="{{ route('admin.social-links.index') }}" class="{{ request()->routeIs('admin.social-links.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Social Links
+                </a>
+                <a href="{{ route('admin.settings.edit') }}" class="{{ request()->routeIs('admin.settings.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Business Settings
+                </a>
                 <a href="{{ route('admin.payments.index') }}" class="{{ request()->routeIs('admin.payments.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
                     Payments
                 </a>
                 <a href="{{ route('admin.media-assets.index') }}" class="{{ request()->routeIs('admin.media-assets.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
                     Media Assets
+                </a>
+                <a href="{{ route('admin.audit-logs.index') }}" class="{{ request()->routeIs('admin.audit-logs.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
+                    Audit Logs
                 </a>
                 <a href="{{ route('admin.security.edit') }}" class="{{ request()->routeIs('admin.security.*') ? 'bg-rosegold-100 text-rosegold-900 border-rosegold-200' : 'border-transparent hover:bg-rosegold-50' }} flex items-center rounded-xl border px-4 py-2.5 font-semibold transition">
                     Security
@@ -72,8 +96,16 @@
                         <div class="absolute right-0 mt-3 w-56 rounded-2xl border border-black/10 bg-white p-2 shadow-xl">
                             <a href="{{ route('admin.dashboard') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Dashboard</a>
                             <a href="{{ route('admin.bookings.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Bookings</a>
+                            <a href="{{ route('admin.services.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Services & Prices</a>
+                            <a href="{{ route('admin.time-slots.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Time Slots</a>
+                            <a href="{{ route('admin.availability-blocks.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Availability Blocks</a>
+                            <a href="{{ route('admin.portfolio-items.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Portfolio</a>
+                            <a href="{{ route('admin.testimonials.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Testimonials</a>
+                            <a href="{{ route('admin.social-links.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Social Links</a>
+                            <a href="{{ route('admin.settings.edit') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Business Settings</a>
                             <a href="{{ route('admin.payments.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Payments</a>
                             <a href="{{ route('admin.media-assets.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Media Assets</a>
+                            <a href="{{ route('admin.audit-logs.index') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Audit Logs</a>
                             <a href="{{ route('admin.security.edit') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">Security</a>
                             <a href="{{ route('home') }}" class="block rounded-lg px-3 py-2 text-sm hover:bg-rosegold-50">View Website</a>
                         </div>

@@ -28,7 +28,7 @@ return [
     |
     */
 
-    'allow_registration' => (bool) env('AUTH_ALLOW_REGISTRATION', true),
+    'allow_registration' => (bool) env('AUTH_ALLOW_REGISTRATION', false),
 
     /*
     |--------------------------------------------------------------------------

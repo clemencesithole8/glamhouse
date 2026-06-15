@@ -33,6 +33,8 @@ class BookingPdfController extends Controller
 
         if (Schema::hasTable('payments')) {
             $relations[] = 'payments';
+        } else {
+            $booking->setRelation('payments', collect());
         }
 
         if ($relations !== []) {

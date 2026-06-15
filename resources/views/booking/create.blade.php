@@ -3,10 +3,9 @@
 
 @section('content')
 @php
-    $business = config('seo.business', []);
-    $publicPhone = trim((string) ($business['phone'] ?? '')) ?: '+263784721479';
-    $whatsappNumber = preg_replace('/\D+/', '', $publicPhone) ?: '263784721479';
-    $whatsappUrl = 'https://wa.me/'.$whatsappNumber.'?text='.rawurlencode('Hi Glamhouse, I found you on Google and would like to book a makeup appointment in Harare.');
+    $contact = \App\Support\PublicBusinessContact::details();
+    $prefill = $prefill ?? [];
+    $bookingValue = fn (string $key, mixed $default = '') => old($key, $prefill[$key] ?? $default);
 @endphp
 
 <div class="mx-auto max-w-7xl px-4 pb-20 pt-10 sm:px-6 lg:px-8">
@@ -25,7 +24,7 @@
                 <div class="relative mt-6 grid gap-3 sm:grid-cols-3">
                     <div class="rounded-2xl border border-black/10 bg-white/85 px-4 py-3 text-sm">
                         <div class="text-xs uppercase tracking-[0.14em] text-black/55">Location</div>
-                        <div class="mt-1 font-semibold">Harare studio + outcall</div>
+                        <div class="mt-1 font-semibold">{{ $contact['service_location_label'] }}</div>
                     </div>
                     <div class="rounded-2xl border border-black/10 bg-white/85 px-4 py-3 text-sm">
                         <div class="text-xs uppercase tracking-[0.14em] text-black/55">Step 1</div>
@@ -56,25 +55,25 @@
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Full Name *</label>
-                            <input name="full_name" value="{{ old('full_name') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
+                            <input name="full_name" value="{{ $bookingValue('full_name') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
                             @error('full_name')<div class="mt-1 text-sm text-red-600">{{ $message }}</div>@enderror
                         </div>
 
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Phone (WhatsApp preferred) *</label>
-                            <input name="phone" value="{{ old('phone') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
+                            <input name="phone" value="{{ $bookingValue('phone') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
                             @error('phone')<div class="mt-1 text-sm text-red-600">{{ $message }}</div>@enderror
                         </div>
 
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Email</label>
-                            <input type="email" name="email" value="{{ old('email') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
+                            <input type="email" name="email" value="{{ $bookingValue('email') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
                             @error('email')<div class="mt-1 text-sm text-red-600">{{ $message }}</div>@enderror
                         </div>
 
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Location / Area *</label>
-                            <input name="location_area" value="{{ old('location_area') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="e.g., Avondale, Borrowdale, CBD" required>
+                            <input name="location_area" value="{{ $bookingValue('location_area') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="e.g., Avondale, Borrowdale, CBD" required>
                             @error('location_area')<div class="mt-1 text-sm text-red-600">{{ $message }}</div>@enderror
                         </div>
                     </div>
@@ -95,7 +94,7 @@
                             <select name="service_id" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
                                 <option value="">Select service...</option>
                                 @foreach($services as $service)
-                                    <option value="{{ $service->id }}" @selected(old('service_id') == $service->id)>
+                                    <option value="{{ $service->id }}" @selected($bookingValue('service_id') == $service->id)>
                                         {{ $service->name }}
                                         @if($service->price) - ${{ number_format($service->price, 0) }} @endif
                                         @if($service->is_consultation_based) (Consultation) @endif
@@ -127,20 +126,23 @@
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Type of Event</label>
-                            <input name="event_type" value="{{ old('event_type') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Wedding, photoshoot, corporate event...">
+                            <input name="event_type" value="{{ $bookingValue('event_type') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Wedding, photoshoot, corporate event...">
                         </div>
 
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Outcall Service? *</label>
                             <select id="is_outcall" name="is_outcall" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
-                                <option value="0" @selected(old('is_outcall', '0') === '0')>No (I will come to the studio)</option>
-                                <option value="1" @selected(old('is_outcall') === '1')>Yes</option>
+                                <option value="0" @selected((string) $bookingValue('is_outcall', '0') === '0')>No (I will come to the studio)</option>
+                                <option value="1" @selected((string) $bookingValue('is_outcall') === '1')>Yes</option>
                             </select>
+                            <p class="mt-2 rounded-xl bg-[#fff7f4] px-3 py-2 text-xs leading-relaxed text-black/65">
+                                Outcall pricing is confirmed after the address is reviewed. Travel distance, early starts, parking, and multi-person setups may change the final quote before deposit payment.
+                            </p>
                         </div>
 
                         <div id="outcall_address_wrap" class="md:col-span-2">
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">If yes, provide address/location</label>
-                            <textarea name="outcall_address" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" rows="3">{{ old('outcall_address') }}</textarea>
+                            <textarea name="outcall_address" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" rows="3">{{ $bookingValue('outcall_address') }}</textarea>
                         </div>
                     </div>
                 </section>
@@ -154,7 +156,7 @@
                             <select name="skin_type" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
                                 <option value="">Select...</option>
                                 @foreach(['Oily', 'Dry', 'Combination', 'Not sure'] as $t)
-                                    <option value="{{ $t }}" @selected(old('skin_type') == $t)>{{ $t }}</option>
+                                    <option value="{{ $t }}" @selected($bookingValue('skin_type') == $t)>{{ $t }}</option>
                                 @endforeach
                             </select>
                         </div>
@@ -162,14 +164,14 @@
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Have you done professional makeup before? *</label>
                             <select name="has_done_pro_makeup" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
-                                <option value="1" @selected(old('has_done_pro_makeup', '1') === '1')>Yes</option>
-                                <option value="0" @selected(old('has_done_pro_makeup') === '0')>No</option>
+                                <option value="1" @selected((string) $bookingValue('has_done_pro_makeup', '1') === '1')>Yes</option>
+                                <option value="0" @selected((string) $bookingValue('has_done_pro_makeup') === '0')>No</option>
                             </select>
                         </div>
 
                         <div class="md:col-span-2">
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Allergies / Skin Conditions</label>
-                            <textarea name="allergies_notes" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" rows="3">{{ old('allergies_notes') }}</textarea>
+                            <textarea name="allergies_notes" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" rows="3">{{ $bookingValue('allergies_notes') }}</textarea>
                         </div>
 
                         <div class="md:col-span-2">
@@ -204,6 +206,37 @@
                     </div>
                 </section>
 
+                <section class="glass-card rounded-3xl p-6 sm:p-7">
+                    <div class="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
+                        <div>
+                            <p class="text-xs font-semibold uppercase tracking-[0.16em] text-rosegold-800">Final Review</p>
+                            <h2 class="font-display mt-1 text-3xl text-[#2a1c19]">Check Before Submitting</h2>
+                        </div>
+                        <span class="rounded-full bg-white/80 px-3 py-1 text-xs font-semibold text-black/60">No payment is taken now</span>
+                    </div>
+                    <dl class="mt-5 grid gap-3 text-sm sm:grid-cols-2">
+                        <div class="rounded-xl bg-white/80 px-4 py-3">
+                            <dt class="text-xs uppercase tracking-[0.13em] text-black/50">Client</dt>
+                            <dd id="review_client" class="mt-1 font-semibold text-[#2a1c19]">Not entered</dd>
+                        </div>
+                        <div class="rounded-xl bg-white/80 px-4 py-3">
+                            <dt class="text-xs uppercase tracking-[0.13em] text-black/50">Service</dt>
+                            <dd id="review_service" class="mt-1 font-semibold text-[#2a1c19]">Not selected</dd>
+                        </div>
+                        <div class="rounded-xl bg-white/80 px-4 py-3">
+                            <dt class="text-xs uppercase tracking-[0.13em] text-black/50">Appointment</dt>
+                            <dd id="review_appointment" class="mt-1 font-semibold text-[#2a1c19]">Date and time pending</dd>
+                        </div>
+                        <div class="rounded-xl bg-white/80 px-4 py-3">
+                            <dt class="text-xs uppercase tracking-[0.13em] text-black/50">Location</dt>
+                            <dd id="review_location" class="mt-1 font-semibold text-[#2a1c19]">Not entered</dd>
+                        </div>
+                    </dl>
+                    <p class="mt-4 text-sm leading-relaxed text-black/65">
+                        After submission, Glamhouse reviews availability, confirms any outcall travel adjustments, and sends payment details for the deposit.
+                    </p>
+                </section>
+
                 <button class="btn-primary w-full justify-center rounded-full py-3 text-sm sm:text-base">
                     Submit Booking
                 </button>
@@ -223,12 +256,16 @@
 
             <article class="rounded-3xl border border-black/10 bg-white p-5">
                 <div class="text-xs uppercase tracking-[0.14em] text-black/55">Need Help Fast?</div>
-                <a href="{{ $whatsappUrl }}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex w-full items-center justify-center rounded-full bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700">
-                    Chat on WhatsApp
-                </a>
-                <a href="mailto:esther2026@gmail.com" class="mt-2 inline-flex w-full items-center justify-center rounded-full border border-black/15 px-4 py-2.5 text-sm font-semibold transition hover:bg-black hover:text-white">
-                    Send Email
-                </a>
+                @if($contact['has_phone'])
+                    <a href="{{ $contact['whatsapp_url'] }}" target="_blank" rel="noopener noreferrer" class="mt-3 inline-flex w-full items-center justify-center rounded-full bg-green-600 px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-green-700">
+                        Chat on WhatsApp
+                    </a>
+                @endif
+                @if($contact['has_email'])
+                    <a href="{{ $contact['email_url'] }}" class="mt-2 inline-flex w-full items-center justify-center rounded-full border border-black/15 px-4 py-2.5 text-sm font-semibold transition hover:bg-black hover:text-white">
+                        Send Email
+                    </a>
+                @endif
             </article>
         </aside>
     </section>
@@ -243,17 +280,51 @@ document.addEventListener('DOMContentLoaded', () => {
 
     const outcallSelect = document.getElementById('is_outcall');
     const outcallWrap = document.getElementById('outcall_address_wrap');
+    const bookingForm = document.querySelector('form[method="POST"]');
+    const reviewClient = document.getElementById('review_client');
+    const reviewService = document.getElementById('review_service');
+    const reviewAppointment = document.getElementById('review_appointment');
+    const reviewLocation = document.getElementById('review_location');
+
+    const field = (name) => bookingForm ? bookingForm.elements[name] : null;
+    const selectedText = (select) => {
+        if (!select || !select.selectedOptions || !select.selectedOptions.length) return '';
+        return select.selectedOptions[0].textContent.trim();
+    };
+    const setReviewText = (target, value, fallback) => {
+        if (!target) return;
+        target.textContent = value && value.trim() ? value.trim() : fallback;
+    };
+
+    const updateReview = () => {
+        const fullName = field('full_name')?.value || '';
+        const phone = field('phone')?.value || '';
+        const serviceText = selectedText(field('service_id')).replace(/\s+/g, ' ');
+        const date = field('appointment_date')?.value || '';
+        const slotText = selectedText(field('time_slot_id')).replace('Select slot...', '').replace('Select date first...', '').trim();
+        const preferredTime = field('preferred_time_text')?.value || '';
+        const locationArea = field('location_area')?.value || '';
+        const outcallAddress = field('outcall_address')?.value || '';
+        const isOutcall = field('is_outcall')?.value === '1';
+
+        setReviewText(reviewClient, [fullName, phone].filter(Boolean).join(' | '), 'Not entered');
+        setReviewText(reviewService, serviceText && serviceText !== 'Select service...' ? serviceText : '', 'Not selected');
+        setReviewText(reviewAppointment, [date, slotText || preferredTime].filter(Boolean).join(' at '), 'Date and time pending');
+        setReviewText(reviewLocation, isOutcall ? (outcallAddress || locationArea) : (locationArea ? `Studio appointment | ${locationArea}` : 'Studio appointment'), 'Not entered');
+    };
 
     const toggleOutcallAddress = () => {
         const show = outcallSelect && outcallSelect.value === '1';
         if (!outcallWrap) return;
         outcallWrap.classList.toggle('opacity-60', !show);
+        updateReview();
     };
 
     const loadSlots = async (date) => {
         if (!date) {
             slotSelect.innerHTML = '<option value="">Select date first...</option>';
             slotStatus.textContent = 'Pick a date to load available slots.';
+            updateReview();
             return;
         }
 
@@ -292,9 +363,11 @@ document.addEventListener('DOMContentLoaded', () => {
             slotStatus.textContent = availableCount > 0
                 ? `${availableCount} slot(s) available for this date.`
                 : 'No open slots found for this date. Try another date.';
+            updateReview();
         } catch (error) {
             slotSelect.innerHTML = '<option value="">Unable to load slots</option>';
             slotStatus.textContent = 'We could not load availability right now. Please retry.';
+            updateReview();
         }
     };
 
@@ -308,10 +381,23 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
+    if (slotSelect) {
+        slotSelect.addEventListener('change', updateReview);
+    }
+
     if (outcallSelect) {
         outcallSelect.addEventListener('change', toggleOutcallAddress);
         toggleOutcallAddress();
     }
+
+    if (bookingForm) {
+        bookingForm.querySelectorAll('input, select, textarea').forEach((element) => {
+            element.addEventListener('input', updateReview);
+            element.addEventListener('change', updateReview);
+        });
+    }
+
+    updateReview();
 });
 </script>
 @endsection

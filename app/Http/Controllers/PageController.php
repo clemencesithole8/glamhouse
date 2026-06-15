@@ -15,10 +15,10 @@ class PageController extends Controller
                 ? Service::where('is_active', true)->get()
                 : collect(),
             'featuredPortfolio' => Schema::hasTable('portfolio_items')
-                ? PortfolioItem::where('is_featured', true)->latest()->take(8)->get()
+                ? PortfolioItem::visible()->where('is_featured', true)->orderBy('sort_order')->latest()->take(8)->get()
                 : collect(),
             'testimonials' => Schema::hasTable('testimonials')
-                ? Testimonial::where('is_featured', true)->latest()->take(6)->get()
+                ? Testimonial::visible()->where('is_featured', true)->orderBy('sort_order')->latest()->take(6)->get()
                 : collect(),
         ]);
     }
@@ -35,7 +35,7 @@ class PageController extends Controller
     public function portfolio() {
         return view('pages.portfolio', [
             'items' => Schema::hasTable('portfolio_items')
-                ? PortfolioItem::latest()->paginate(18)
+                ? PortfolioItem::visible()->orderBy('sort_order')->latest()->paginate(18)
                 : new LengthAwarePaginator([], 0, 18),
         ]);
     }

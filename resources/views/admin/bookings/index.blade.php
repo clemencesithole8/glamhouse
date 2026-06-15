@@ -22,7 +22,7 @@
 
             <select name="status" class="rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
                 <option value="">All statuses</option>
-                @foreach (['pending', 'confirmed', 'completed', 'cancelled'] as $status)
+                @foreach (\App\Models\Booking::STATUSES as $status)
                     <option value="{{ $status }}" @selected(request('status') === $status)>{{ ucfirst($status) }}</option>
                 @endforeach
             </select>
@@ -47,6 +47,7 @@
                         <th class="px-4 py-3">Appointment</th>
                         <th class="px-4 py-3">Service</th>
                         <th class="px-4 py-3">Status</th>
+                        <th class="px-4 py-3">Payment</th>
                         <th class="px-4 py-3 text-right">Action</th>
                     </tr>
                 </thead>
@@ -55,6 +56,7 @@
                         @php
                             $badgeClasses = match ($booking->status) {
                                 'pending' => 'bg-amber-100 text-amber-900',
+                                'reviewed' => 'bg-violet-100 text-violet-900',
                                 'confirmed' => 'bg-sky-100 text-sky-900',
                                 'completed' => 'bg-emerald-100 text-emerald-900',
                                 'cancelled' => 'bg-rose-100 text-rose-900',
@@ -83,6 +85,22 @@
                                 <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $badgeClasses }}">
                                     {{ ucfirst($booking->status) }}
                                 </span>
+                                @if (str_contains((string) $booking->admin_notes, '[Notification alert]'))
+                                    <div class="mt-2 inline-flex rounded-full bg-amber-100 px-2.5 py-1 text-xs font-semibold text-amber-900">
+                                        Alert issue
+                                    </div>
+                                @endif
+                                @if ($booking->reschedule_requested_at)
+                                    <div class="mt-2 text-xs font-semibold text-amber-700">Reschedule requested</div>
+                                @endif
+                            </td>
+                            <td class="px-4 py-4 align-top">
+                                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $booking->payment_status_classes }}">
+                                    {{ $booking->payment_status_label }}
+                                </span>
+                                <div class="mt-1 text-xs text-black/55">
+                                    Paid ${{ number_format($booking->total_paid, 0) }}
+                                </div>
                             </td>
                             <td class="px-4 py-4 text-right align-top">
                                 <a href="{{ route('admin.bookings.show', $booking) }}" class="btn-outline inline-flex px-4 py-2 text-xs">Open</a>
@@ -90,7 +108,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="px-4 py-10 text-center text-sm text-black/60">No bookings found for this filter.</td>
+                            <td colspan="6" class="px-4 py-10 text-center text-sm text-black/60">No bookings found for this filter.</td>
                         </tr>
                     @endforelse
                 </tbody>
