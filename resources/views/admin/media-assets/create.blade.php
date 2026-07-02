@@ -38,8 +38,9 @@
 
         <div>
             <label class="mb-1 block text-xs uppercase tracking-[0.14em] text-black/55">Image</label>
-            <input type="file" name="image" class="w-full rounded-xl border border-black/15 px-3 py-2 text-sm" required>
-            <p class="mt-2 text-xs text-black/55">Accepted: JPG, PNG, WEBP. Maximum file size: 8MB.</p>
+            <input type="file" name="image" accept="image/jpeg,image/png,image/webp" data-image-preview="#media-image-preview" class="w-full rounded-xl border border-black/15 px-3 py-2 text-sm" required>
+            <img id="media-image-preview" src="" class="mt-3 hidden max-h-[360px] w-full rounded-2xl border border-black/10 object-cover" alt="Selected image preview">
+            <p class="mt-2 text-xs text-black/55">Accepted: JPG, PNG, WEBP. Maximum file size: 8MB. Uploads generate a WebP asset, thumbnail, and dimensions automatically.</p>
         </div>
 
         <div class="flex flex-wrap gap-3">

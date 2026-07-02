@@ -15,7 +15,21 @@
             <div class="mt-1 font-mono text-sm">{{ $asset->key }}</div>
         </div>
 
-        <img src="{{ \Illuminate\Support\Facades\Storage::disk($asset->disk)->url($asset->path) }}" class="max-h-[420px] w-full rounded-2xl border border-black/10 object-cover" alt="Current asset image">
+        <img id="media-current-preview" src="{{ $asset->url() }}" class="max-h-[420px] w-full rounded-2xl border border-black/10 object-cover" alt="Current asset image">
+        <div class="mt-4 grid gap-3 text-sm sm:grid-cols-3">
+            <div class="rounded-xl bg-[#fbf7f3] px-4 py-3">
+                <div class="text-xs uppercase tracking-[0.13em] text-black/50">Dimensions</div>
+                <div class="mt-1 font-semibold">{{ $asset->width && $asset->height ? $asset->width.' x '.$asset->height : 'Unknown' }}</div>
+            </div>
+            <div class="rounded-xl bg-[#fbf7f3] px-4 py-3">
+                <div class="text-xs uppercase tracking-[0.13em] text-black/50">Original File</div>
+                <div class="mt-1 truncate font-semibold">{{ $asset->original_name ?: basename($asset->path) }}</div>
+            </div>
+            <div class="rounded-xl bg-[#fbf7f3] px-4 py-3">
+                <div class="text-xs uppercase tracking-[0.13em] text-black/50">Optimized</div>
+                <div class="mt-1 font-semibold">{{ $asset->webp_path ? 'WebP + thumbnail' : 'Original only' }}</div>
+            </div>
+        </div>
     </section>
 
     <section class="rounded-3xl border border-black/10 bg-white p-6">
@@ -49,7 +63,8 @@
 
             <div>
                 <label class="mb-1 block text-xs uppercase tracking-[0.14em] text-black/55">Replace Image (Optional)</label>
-                <input type="file" name="image" class="w-full rounded-xl border border-black/15 px-3 py-2 text-sm">
+                <input type="file" name="image" accept="image/jpeg,image/png,image/webp" data-image-preview="#media-current-preview" class="w-full rounded-xl border border-black/15 px-3 py-2 text-sm">
+                <p class="mt-2 text-xs text-black/55">Accepted: JPG, PNG, WEBP. New uploads generate a WebP asset and thumbnail automatically.</p>
             </div>
 
             <div class="flex flex-wrap items-center gap-3">

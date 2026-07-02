@@ -139,5 +139,25 @@
             </main>
         </div>
     </div>
+    <script>
+        document.addEventListener('change', (event) => {
+            const input = event.target;
+
+            if (! (input instanceof HTMLInputElement) || ! input.matches('[data-image-preview]') || ! input.files?.[0]) {
+                return;
+            }
+
+            const preview = document.querySelector(input.dataset.imagePreview);
+
+            if (! (preview instanceof HTMLImageElement)) {
+                return;
+            }
+
+            const objectUrl = URL.createObjectURL(input.files[0]);
+            preview.src = objectUrl;
+            preview.classList.remove('hidden');
+            preview.addEventListener('load', () => URL.revokeObjectURL(objectUrl), { once: true });
+        });
+    </script>
 </body>
 </html>

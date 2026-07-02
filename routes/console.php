@@ -3,6 +3,7 @@
 use App\Models\Booking;
 use App\Models\User;
 use App\Notifications\BookingReminderNotification;
+use App\Services\BackupService;
 use Illuminate\Foundation\Inspiring;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Hash;
@@ -164,3 +165,18 @@ Artisan::command('bookings:send-reminders', function () {
 })->purpose('Send client reminder messages around 24 hours before confirmed appointments');
 
 Schedule::command('bookings:send-reminders')->hourly();
+
+Artisan::command('backup:run', function () {
+    $path = app(BackupService::class)->run();
+
+    $this->info('Backup created successfully.');
+    $this->line($path);
+
+    return Command::SUCCESS;
+})->purpose('Create a database and uploaded-media backup archive');
+
+if (config('glamhouse.backups.enabled')) {
+    Schedule::command('backup:run')
+        ->dailyAt((string) config('glamhouse.backups.daily_at', '02:15'))
+        ->withoutOverlapping();
+}

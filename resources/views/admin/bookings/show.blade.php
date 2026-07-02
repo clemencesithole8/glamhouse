@@ -114,8 +114,8 @@
             </form>
 
             <div class="mt-6 border-t border-black/10 pt-5">
-                <h4 class="font-semibold">Quote and Deposit Tracking</h4>
-                <form method="POST" action="{{ route('admin.bookings.financials', $booking) }}" class="mt-3 grid gap-3 md:grid-cols-[1fr_1fr_auto] md:items-end">
+                <h4 class="font-semibold">Quote, Deposit, and Admin Notes</h4>
+                <form method="POST" action="{{ route('admin.bookings.financials', $booking) }}" class="mt-3 grid gap-3 md:grid-cols-2">
                     @csrf
                     <div>
                         <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Deposit Amount</label>
@@ -125,7 +125,42 @@
                         <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Total Quote</label>
                         <input type="number" name="total_amount" min="0" value="{{ old('total_amount', $booking->total_amount) }}" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Total">
                     </div>
-                    <button class="btn-outline text-sm">Save Quote</button>
+                    <div class="md:col-span-2">
+                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Admin Notes</label>
+                        <textarea name="admin_notes" rows="4" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">{{ old('admin_notes', $booking->admin_notes) }}</textarea>
+                    </div>
+                    <div class="md:col-span-2">
+                        <button class="btn-outline text-sm">Save Details</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="mt-6 border-t border-black/10 pt-5">
+                <h4 class="font-semibold">Reschedule Appointment</h4>
+                <form method="POST" action="{{ route('admin.bookings.reschedule', $booking) }}" class="mt-3 grid gap-3 md:grid-cols-2">
+                    @csrf
+                    <div>
+                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">New Date</label>
+                        <input type="date" name="appointment_date" value="{{ old('appointment_date', optional($booking->appointment_date)->toDateString()) }}" required class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
+                    </div>
+                    <div>
+                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">New Time Slot</label>
+                        <select name="time_slot_id" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
+                            <option value="">Use preferred time text</option>
+                            @foreach($timeSlots as $slot)
+                                <option value="{{ $slot->id }}" @selected((string) old('time_slot_id', $booking->time_slot_id) === (string) $slot->id)>
+                                    {{ \Illuminate\Support\Str::of($slot->start_time)->substr(0, 5) }} - {{ \Illuminate\Support\Str::of($slot->end_time)->substr(0, 5) }}
+                                </option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="md:col-span-2">
+                        <label class="mb-1 block text-xs uppercase tracking-[0.13em] text-black/55">Preferred Time Text</label>
+                        <input name="preferred_time_text" value="{{ old('preferred_time_text', $booking->preferred_time_text) }}" class="w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" placeholder="Only needed if not using a saved slot">
+                    </div>
+                    <div class="md:col-span-2">
+                        <button class="btn-primary text-sm">Reschedule and Notify Client</button>
+                    </div>
                 </form>
             </div>
 

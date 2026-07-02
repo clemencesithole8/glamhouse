@@ -3,7 +3,6 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Support\Facades\Schema;
 use Throwable;
 
 class Setting extends Model
@@ -51,25 +50,23 @@ class Setting extends Model
     public static function publicSocialLinks(): array
     {
         try {
-            if (Schema::hasTable('social_links')) {
-                $links = SocialLink::query()
-                    ->where('is_active', true)
-                    ->orderBy('display_order')
-                    ->orderBy('platform')
-                    ->get()
-                    ->mapWithKeys(function (SocialLink $link): array {
-                        $key = strtolower($link->platform);
+            $links = SocialLink::query()
+                ->where('is_active', true)
+                ->orderBy('display_order')
+                ->orderBy('platform')
+                ->get()
+                ->mapWithKeys(function (SocialLink $link): array {
+                    $key = strtolower($link->platform);
 
-                        return [$key => [
-                            'label' => $link->label ?: ucfirst($link->platform),
-                            'url' => $link->url,
-                        ]];
-                    })
-                    ->all();
+                    return [$key => [
+                        'label' => $link->label ?: ucfirst($link->platform),
+                        'url' => $link->url,
+                    ]];
+                })
+                ->all();
 
-                if ($links !== []) {
-                    return $links;
-                }
+            if ($links !== []) {
+                return $links;
             }
         } catch (Throwable) {
             //
@@ -86,7 +83,7 @@ class Setting extends Model
         $links = [];
 
         foreach ($platforms as $key => [$label, $settingKey]) {
-            $url = trim((string) static::valueFor($settingKey, config("seo.social.{$key}_url", '')));
+            $url = trim((string) static::valueFor($settingKey, config("glamhouse.social_urls.{$key}", '')));
 
             if ($url !== '') {
                 $links[$key] = [

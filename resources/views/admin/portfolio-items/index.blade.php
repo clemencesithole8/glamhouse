@@ -4,6 +4,7 @@
 @section('page_title', 'Portfolio')
 
 @section('page_actions')
+    <a href="{{ route('portfolio') }}" class="btn-outline text-xs" target="_blank" rel="noopener">View Public Portfolio</a>
     <a href="{{ route('admin.portfolio-items.create') }}" class="btn-primary text-xs">Add Portfolio Item</a>
 @endsection
 
@@ -25,12 +26,16 @@
                         <th class="px-4 py-3">Title</th>
                         <th class="px-4 py-3">Category</th>
                         <th class="px-4 py-3">Featured</th>
-                        <th class="px-4 py-3">Active</th>
+                        <th class="px-4 py-3">Status</th>
                         <th class="px-4 py-3 text-right">Action</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($items as $item)
+                        @php
+                            $isLive = $item->is_active && (! $item->published_at || $item->published_at->lte(now()));
+                            $isScheduled = $item->is_active && $item->published_at && $item->published_at->isFuture();
+                        @endphp
                         <tr class="border-t border-black/10">
                             <td class="px-4 py-3">
                                 <img src="{{ $item->imageUrl('thumbnail') }}" alt="" class="h-16 w-24 rounded-xl border border-black/10 object-cover">
@@ -43,9 +48,12 @@
                                 </span>
                             </td>
                             <td class="px-4 py-3">
-                                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $item->is_active ? 'bg-sky-100 text-sky-900' : 'bg-gray-100 text-gray-700' }}">
-                                    {{ $item->is_active ? 'Yes' : 'No' }}
+                                <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $isLive ? 'bg-emerald-100 text-emerald-900' : ($isScheduled ? 'bg-amber-100 text-amber-900' : 'bg-gray-100 text-gray-700') }}">
+                                    {{ $isLive ? 'Live' : ($isScheduled ? 'Scheduled' : 'Hidden') }}
                                 </span>
+                                @if($item->published_at)
+                                    <div class="mt-1 text-xs text-black/50">{{ $item->published_at->format('M j, Y g:i A') }}</div>
+                                @endif
                             </td>
                             <td class="px-4 py-3 text-right">
                                 <a href="{{ route('admin.portfolio-items.edit', $item) }}" class="btn-outline inline-flex px-4 py-2 text-xs">Edit</a>

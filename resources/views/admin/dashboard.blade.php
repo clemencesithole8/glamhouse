@@ -49,6 +49,12 @@
                 <a href="{{ route('admin.payments.index') }}" class="rounded-xl border border-black/10 px-4 py-3 transition hover:bg-rosegold-50">
                     Check payments and totals
                 </a>
+                <a href="{{ route('admin.services.index') }}" class="rounded-xl border border-black/10 px-4 py-3 transition hover:bg-rosegold-50">
+                    Update services and prices
+                </a>
+                <a href="{{ route('admin.availability-blocks.index') }}" class="rounded-xl border border-black/10 px-4 py-3 transition hover:bg-rosegold-50">
+                    Manage unavailable dates and holidays
+                </a>
                 <a href="{{ route('admin.media-assets.index') }}" class="rounded-xl border border-black/10 px-4 py-3 transition hover:bg-rosegold-50">
                     Update homepage and portfolio images
                 </a>

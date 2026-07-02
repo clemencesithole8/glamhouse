@@ -4,6 +4,7 @@
 @section('content')
 @php
     $contact = \App\Support\PublicBusinessContact::details();
+    $socialLinks = social_links();
 @endphp
 
 <div class="mx-auto max-w-7xl space-y-10 px-4 pb-20 pt-10 sm:px-6 lg:px-8">
@@ -107,39 +108,19 @@
                 </div>
 
                 <div class="mt-5 grid gap-3 sm:grid-cols-3">
-                    <a href="https://instagram.com/" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-black/10 bg-white p-4 transition hover:-translate-y-0.5 hover:border-[#f77737] hover:shadow-lg">
-                        <div class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-[#fff1e7] text-[#f77737]">
-                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <rect x="3" y="3" width="18" height="18" rx="5"/>
-                                <circle cx="12" cy="12" r="4"/>
-                                <circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/>
-                            </svg>
+                    @forelse($socialLinks as $link)
+                        <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-black/10 bg-white p-4 transition hover:-translate-y-0.5 hover:border-rosegold-300 hover:shadow-lg">
+                            <div class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-rosegold-100 text-sm font-extrabold text-rosegold-800">
+                                {{ strtoupper(substr($link['label'], 0, 1)) }}
+                            </div>
+                            <div class="mt-3 text-sm font-semibold">{{ $link['label'] }}</div>
+                            <div class="text-xs text-black/60">Open {{ $link['label'] }}</div>
+                        </a>
+                    @empty
+                        <div class="rounded-2xl border border-dashed border-black/15 bg-white/70 p-4 text-sm text-black/60 sm:col-span-3">
+                            Social links are not published yet. Add active links in admin when the real channels are ready.
                         </div>
-                        <div class="mt-3 text-sm font-semibold">Instagram</div>
-                        <div class="text-xs text-black/60">Tap to update link later</div>
-                    </a>
-
-                    <a href="https://www.tiktok.com/" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-black/10 bg-white p-4 transition hover:-translate-y-0.5 hover:border-black/40 hover:shadow-lg">
-                        <div class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-gray-100 text-gray-900">
-                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <path d="M14 5v8.5a3.5 3.5 0 1 1-2.5-3.35"/>
-                                <path d="M14 5c1.2 1.8 2.8 2.7 5 2.8"/>
-                            </svg>
-                        </div>
-                        <div class="mt-3 text-sm font-semibold">TikTok</div>
-                        <div class="text-xs text-black/60">Tap to update link later</div>
-                    </a>
-
-                    <a href="https://www.youtube.com/" target="_blank" rel="noopener noreferrer" class="group rounded-2xl border border-black/10 bg-white p-4 transition hover:-translate-y-0.5 hover:border-rose-400 hover:shadow-lg">
-                        <div class="inline-flex h-11 w-11 items-center justify-center rounded-full bg-rose-100 text-rose-700">
-                            <svg class="h-6 w-6" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
-                                <rect x="2.5" y="6" width="19" height="12" rx="3"/>
-                                <path d="m10 9 5 3-5 3Z" fill="currentColor" stroke="none"/>
-                            </svg>
-                        </div>
-                        <div class="mt-3 text-sm font-semibold">YouTube</div>
-                        <div class="text-xs text-black/60">Tap to update link later</div>
-                    </a>
+                    @endforelse
                 </div>
             </article>
 

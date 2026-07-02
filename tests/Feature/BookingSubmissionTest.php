@@ -68,6 +68,44 @@ class BookingSubmissionTest extends TestCase
         );
     }
 
+    public function test_booking_submission_requires_valid_contact_details(): void
+    {
+        $service = $this->createService();
+
+        $this->from('/booking')->post('/booking', $this->validPayload($service, [
+            'email' => '',
+        ]))
+            ->assertRedirect('/booking')
+            ->assertSessionHasErrors('email');
+
+        $this->from('/booking')->post('/booking', $this->validPayload($service, [
+            'phone' => '12345',
+            'email' => 'not-an-email',
+        ]))
+            ->assertRedirect('/booking')
+            ->assertSessionHasErrors(['phone', 'email']);
+
+        $this->assertDatabaseCount('bookings', 0);
+    }
+
+    public function test_booking_submission_normalizes_contact_details(): void
+    {
+        Notification::fake();
+
+        $service = $this->createService();
+
+        $this->from('/booking')->post('/booking', $this->validPayload($service, [
+            'phone' => '+263 784 721 479',
+            'email' => ' CLIENT@Example.COM ',
+        ]))
+            ->assertRedirect();
+
+        $this->assertDatabaseHas('bookings', [
+            'phone' => '+263784721479',
+            'email' => 'client@example.com',
+        ]);
+    }
+
     public function test_booking_submission_records_visible_alert_when_admin_channels_are_not_configured(): void
     {
         config()->set('glamhouse.admin_email', null);

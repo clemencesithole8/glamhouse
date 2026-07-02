@@ -55,19 +55,19 @@
                     <div class="mt-5 grid gap-4 md:grid-cols-2">
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Full Name *</label>
-                            <input name="full_name" value="{{ $bookingValue('full_name') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
+                            <input name="full_name" value="{{ $bookingValue('full_name') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" autocomplete="name" required>
                             @error('full_name')<div class="mt-1 text-sm text-red-600">{{ $message }}</div>@enderror
                         </div>
 
                         <div>
                             <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Phone (WhatsApp preferred) *</label>
-                            <input name="phone" value="{{ $bookingValue('phone') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" required>
+                            <input type="tel" name="phone" value="{{ $bookingValue('phone') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" autocomplete="tel" inputmode="tel" maxlength="24" placeholder="+263771234567 or 0771234567" pattern="(?:\+[1-9][0-9\s().-]{7,18}|263[0-9\s().-]{8,14}|0[0-9\s().-]{8,14})" required>
                             @error('phone')<div class="mt-1 text-sm text-red-600">{{ $message }}</div>@enderror
                         </div>
 
                         <div>
-                            <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Email</label>
-                            <input type="email" name="email" value="{{ $bookingValue('email') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500">
+                            <label class="text-xs font-semibold uppercase tracking-[0.12em] text-black/60">Email *</label>
+                            <input type="email" name="email" value="{{ $bookingValue('email') }}" class="mt-1 w-full rounded-xl border-black/15 text-sm focus:border-rosegold-500 focus:ring-rosegold-500" autocomplete="email" maxlength="255" required>
                             @error('email')<div class="mt-1 text-sm text-red-600">{{ $message }}</div>@enderror
                         </div>
 
@@ -248,6 +248,7 @@
                 <h3 class="font-display text-2xl text-[#2a1c19]">Before You Submit</h3>
                 <ul class="mt-3 space-y-2 text-sm text-black/70">
                     <li>- Choose your date first, then pick an available slot.</li>
+                    <li>- Use a reachable email address and phone number.</li>
                     <li>- Outcall requests should include a clear address.</li>
                     <li>- Add reference photos for best style matching.</li>
                     <li>- Ensure all policy checkboxes are selected.</li>
@@ -317,6 +318,9 @@ document.addEventListener('DOMContentLoaded', () => {
         const show = outcallSelect && outcallSelect.value === '1';
         if (!outcallWrap) return;
         outcallWrap.classList.toggle('opacity-60', !show);
+        if (dateInput && dateInput.value) {
+            loadSlots(dateInput.value);
+        }
         updateReview();
     };
 
@@ -332,7 +336,8 @@ document.addEventListener('DOMContentLoaded', () => {
         slotStatus.textContent = 'Checking availability...';
 
         try {
-            const res = await fetch(`{{ route('availability.index') }}?date=${encodeURIComponent(date)}`);
+            const isOutcall = outcallSelect && outcallSelect.value === '1' ? '1' : '0';
+            const res = await fetch(`{{ route('availability.index') }}?date=${encodeURIComponent(date)}&is_outcall=${isOutcall}`);
             if (!res.ok) {
                 throw new Error('Failed to load slots');
             }
@@ -346,7 +351,7 @@ document.addEventListener('DOMContentLoaded', () => {
             slots.forEach((slot) => {
                 const opt = document.createElement('option');
                 opt.value = slot.id;
-                opt.textContent = `${String(slot.start_time).slice(0, 5)} - ${String(slot.end_time).slice(0, 5)}${slot.is_available ? '' : ' (Booked)'}`;
+                opt.textContent = `${String(slot.start_time).slice(0, 5)} - ${String(slot.end_time).slice(0, 5)}${slot.is_available ? '' : ` (${slot.reason || 'Unavailable'})`}`;
                 opt.disabled = !slot.is_available;
 
                 if (slot.is_available) {

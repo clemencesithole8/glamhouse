@@ -76,7 +76,7 @@ class AdminPortfolioItemController extends Controller
         $before = $portfolioItem->getOriginal();
 
         if ($request->hasFile('image')) {
-            $images->deleteStoredImages($portfolioItem->storagePaths());
+            $images->deleteStoredImages($this->primaryImageStoragePaths($portfolioItem));
             $image = $images->store($request->file('image'), 'portfolio');
 
             $data = [
@@ -140,8 +140,20 @@ class AdminPortfolioItemController extends Controller
         }
 
         $stored = $images->store($request->file($field), 'portfolio');
-        $images->deleteStoredImages([$stored['path'], $stored['thumbnail_path']]);
+        $images->deleteStoredImages(array_diff([
+            $stored['path'],
+            $stored['thumbnail_path'],
+        ], [$stored['webp_path']]));
 
         return $stored['webp_path'];
+    }
+
+    private function primaryImageStoragePaths(PortfolioItem $portfolioItem): array
+    {
+        return array_values(array_filter([
+            $portfolioItem->image_path,
+            $portfolioItem->webp_path,
+            $portfolioItem->thumbnail_path,
+        ]));
     }
 }

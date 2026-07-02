@@ -34,29 +34,114 @@
         $googleSiteVerification = config('seo.google.site_verification', '');
 
         $business = config('seo.business', []);
+        $publicContact = \App\Support\PublicBusinessContact::details();
+        $socialLinks = social_links();
         $address = array_filter([
-            'streetAddress' => (string) ($business['street_address'] ?? ''),
-            'addressLocality' => (string) ($business['locality'] ?? ''),
-            'addressRegion' => (string) ($business['region'] ?? ''),
-            'postalCode' => (string) ($business['postal_code'] ?? ''),
-            'addressCountry' => (string) ($business['country'] ?? ''),
+            'streetAddress' => $publicContact['street_address'],
+            'addressLocality' => $publicContact['locality'],
+            'addressRegion' => $publicContact['region'],
+            'postalCode' => $publicContact['postal_code'],
+            'addressCountry' => $publicContact['country'],
         ], static fn ($value) => $value !== '');
+
+        $schemaServices = collect();
+        if (\Illuminate\Support\Facades\Schema::hasTable('services')) {
+            $schemaServices = \App\Models\Service::query()
+                ->where('is_active', true)
+                ->orderBy('name')
+                ->get();
+        }
+
+        $schemaTestimonials = collect();
+        if (\Illuminate\Support\Facades\Schema::hasTable('testimonials')) {
+            $schemaTestimonials = \App\Models\Testimonial::query()
+                ->visible()
+                ->whereNotNull('rating')
+                ->latest()
+                ->take(10)
+                ->get();
+        }
+
+        $ratings = $schemaTestimonials->pluck('rating')->filter();
+        $latitude = business_setting('latitude', $business['latitude'] ?? '');
+        $longitude = business_setting('longitude', $business['longitude'] ?? '');
+        $businessId = url('/').'#localbusiness';
+        $sameAs = collect($socialLinks)->pluck('url')->filter()->values()->all();
+
+        $localBusinessSchema = [
+            '@type' => ['BeautySalon', 'ProfessionalService', 'LocalBusiness'],
+            '@id' => $businessId,
+            'name' => $publicContact['business_name'] ?: $siteName,
+            'description' => business_setting('description', $business['description'] ?? $metaDescription),
+            'url' => url('/'),
+            'image' => $metaImage !== '' ? $metaImage : null,
+            'telephone' => $publicContact['phone'],
+            'email' => $publicContact['email'],
+            'priceRange' => business_setting('price_range', $business['price_range'] ?? ''),
+            'openingHours' => business_setting('opening_hours', $business['opening_hours'] ?? ''),
+            'sameAs' => $sameAs !== [] ? $sameAs : null,
+            'address' => $address !== [] ? array_merge(['@type' => 'PostalAddress'], $address) : null,
+            'geo' => $latitude !== '' && $longitude !== '' ? [
+                '@type' => 'GeoCoordinates',
+                'latitude' => $latitude,
+                'longitude' => $longitude,
+            ] : null,
+            'areaServed' => $publicContact['location_display'] !== '' ? [
+                '@type' => 'Place',
+                'name' => $publicContact['location_display'],
+            ] : null,
+            'makesOffer' => $schemaServices->map(function ($service): array {
+                return array_filter([
+                    '@type' => 'Offer',
+                    'price' => is_null($service->price) ? null : (string) $service->price,
+                    'priceCurrency' => is_null($service->price) ? null : 'USD',
+                    'availability' => 'https://schema.org/InStock',
+                    'itemOffered' => array_filter([
+                        '@type' => 'Service',
+                        'name' => $service->name,
+                        'description' => $service->description,
+                        'serviceType' => 'Makeup artistry',
+                    ]),
+                ], static fn ($value) => ! is_null($value) && $value !== '' && $value !== []);
+            })->values()->all() ?: null,
+            'aggregateRating' => $ratings->isNotEmpty() ? [
+                '@type' => 'AggregateRating',
+                'ratingValue' => round($ratings->avg(), 1),
+                'reviewCount' => $ratings->count(),
+                'bestRating' => 5,
+                'worstRating' => 1,
+            ] : null,
+            'review' => $schemaTestimonials->map(function ($testimonial): array {
+                return array_filter([
+                    '@type' => 'Review',
+                    'reviewBody' => $testimonial->content,
+                    'author' => [
+                        '@type' => 'Person',
+                        'name' => $testimonial->client_name,
+                    ],
+                    'reviewRating' => $testimonial->rating ? [
+                        '@type' => 'Rating',
+                        'ratingValue' => $testimonial->rating,
+                        'bestRating' => 5,
+                        'worstRating' => 1,
+                    ] : null,
+                ], static fn ($value) => ! is_null($value) && $value !== '' && $value !== []);
+            })->values()->all() ?: null,
+        ];
 
         $schema = [
             '@context' => 'https://schema.org',
-            '@type' => 'ProfessionalService',
-            'name' => (string) ($business['name'] ?? $siteName),
-            'description' => (string) ($business['description'] ?? $metaDescription),
-            'url' => url('/'),
-            'image' => $metaImage !== '' ? $metaImage : null,
-            'telephone' => (string) ($business['phone'] ?? ''),
-            'email' => (string) ($business['email'] ?? ''),
-            'address' => $address !== [] ? array_merge(['@type' => 'PostalAddress'], $address) : null,
+            '@graph' => [
+                [
+                    '@type' => 'WebSite',
+                    '@id' => url('/').'#website',
+                    'url' => url('/'),
+                    'name' => $siteName,
+                    'publisher' => ['@id' => $businessId],
+                ],
+                array_filter($localBusinessSchema, static fn ($value) => ! is_null($value) && $value !== '' && $value !== []),
+            ],
         ];
-
-        $schema = array_filter($schema, static fn ($value) => !is_null($value) && $value !== '' && $value !== []);
-
-        $publicContact = \App\Support\PublicBusinessContact::details();
     @endphp
 
     <meta charset="utf-8">
@@ -184,12 +269,21 @@
 
         <footer class="mt-16 border-t border-black/10 pb-24 md:pb-0">
             <div class="mx-auto max-w-7xl px-4 py-12 sm:px-6 lg:px-8">
-                <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+                <div class="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
                     <div>
                         <div class="font-display text-2xl text-[#2d1f1a]">Esther's Secrets</div>
                         <p class="mt-2 max-w-xs text-sm text-black/65">
                             Skincare-aware artistry built for long events, camera lights, and confident entrances.
                         </p>
+                        @if($socialLinks !== [])
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                @foreach($socialLinks as $link)
+                                    <a href="{{ $link['url'] }}" target="_blank" rel="noopener noreferrer" class="rounded-full border border-black/10 px-3 py-1.5 text-xs font-semibold transition hover:border-rosegold-300 hover:bg-rosegold-50">
+                                        {{ $link['label'] }}
+                                    </a>
+                                @endforeach
+                            </div>
+                        @endif
                     </div>
                     <div>
                         <div class="text-xs font-semibold uppercase tracking-[0.2em] text-black/55">Quick Links</div>
@@ -206,6 +300,20 @@
                             <a class="site-link w-max" href="{{ route('faq') }}">FAQ</a>
                             <a class="site-link w-max" href="{{ route('contact') }}">Contact</a>
                             <a class="site-link w-max" href="{{ route('admin.dashboard') }}">Admin Panel</a>
+                        </div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold uppercase tracking-[0.2em] text-black/55">Contact</div>
+                        <div class="mt-3 grid gap-2 text-sm text-black/65">
+                            @if($publicContact['phone_display'] !== '')
+                                <a class="site-link w-max" href="{{ $publicContact['whatsapp_url'] }}" target="_blank" rel="noopener noreferrer">{{ $publicContact['phone_display'] }}</a>
+                            @endif
+                            @if($publicContact['email'] !== '')
+                                <a class="site-link w-max" href="{{ $publicContact['email_url'] }}">{{ $publicContact['email'] }}</a>
+                            @endif
+                            @if($publicContact['location_display'] !== '')
+                                <span>{{ $publicContact['location_display'] }}</span>
+                            @endif
                         </div>
                     </div>
                 </div>

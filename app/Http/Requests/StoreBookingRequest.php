@@ -11,6 +11,25 @@ class StoreBookingRequest extends FormRequest
         return true;
     }
 
+    protected function prepareForValidation(): void
+    {
+        $phone = trim((string) $this->input('phone', ''));
+        $phone = preg_replace('/[\s().-]+/', '', $phone) ?? $phone;
+
+        if (str_starts_with($phone, '00')) {
+            $phone = '+'.substr($phone, 2);
+        }
+
+        $email = $this->input('email');
+
+        $this->merge([
+            'full_name' => trim((string) $this->input('full_name', '')),
+            'phone' => $phone,
+            'email' => is_string($email) ? strtolower(trim($email)) : $email,
+            'location_area' => trim((string) $this->input('location_area', '')),
+        ]);
+    }
+
     public function rules(): array
     {
         $serviceRules = ['required','integer'];
@@ -27,8 +46,8 @@ class StoreBookingRequest extends FormRequest
         return [
             // Client
             'full_name' => ['required','string','max:255'],
-            'phone' => ['required','string','max:50'],
-            'email' => ['nullable','email','max:255'],
+            'phone' => ['required','string','max:20','regex:/\A(?:\+[1-9]\d{7,14}|263\d{8,9}|0\d{8,9})\z/'],
+            'email' => ['required','string','email:rfc,strict','max:255'],
             'location_area' => ['required','string','max:255'],
 
             // Booking
@@ -48,7 +67,7 @@ class StoreBookingRequest extends FormRequest
             'has_done_pro_makeup' => ['required','boolean'],
 
             // Upload
-            'reference_look' => ['nullable','file','mimes:jpg,jpeg,png,webp','max:5120'],
+            'reference_look' => ['nullable','image','mimetypes:image/jpeg,image/png,image/webp','max:5120','dimensions:min_width=100,min_height=100'],
 
             // Terms
             'deposit_ack' => ['required','accepted'],
@@ -56,6 +75,15 @@ class StoreBookingRequest extends FormRequest
             'info_confirmed' => ['required','accepted'],
 
             'how_heard' => ['nullable','string','max:50'],
+        ];
+    }
+
+    public function messages(): array
+    {
+        return [
+            'phone.regex' => 'Enter a valid phone number, e.g. +263784721479 or 0770000000.',
+            'email.required' => 'Enter a valid email address so we can send your booking confirmation.',
+            'email.email' => 'Enter a valid email address so we can send your booking confirmation.',
         ];
     }
 }

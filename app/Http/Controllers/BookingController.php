@@ -8,6 +8,7 @@ use App\Models\TimeSlot;
 use App\Notifications\BookingSubmittedClientNotification;
 use App\Notifications\BookingSubmittedAdminNotification;
 use App\Services\BookingAvailabilityService;
+use App\Services\ImageOptimizer;
 use App\Services\WhatsAppNotifier;
 use Illuminate\Database\QueryException;
 use Illuminate\Http\Request;
@@ -34,7 +35,7 @@ class BookingController extends Controller
         ]);
     }
 
-    public function store(StoreBookingRequest $request, BookingAvailabilityService $availability)
+    public function store(StoreBookingRequest $request, BookingAvailabilityService $availability, ImageOptimizer $images)
     {
         $data = $request->validated();
 
@@ -51,7 +52,7 @@ class BookingController extends Controller
         }
 
         try {
-            $booking = DB::transaction(function () use ($request, $data, $availability): Booking {
+            $booking = DB::transaction(function () use ($request, $data, $availability, $images): Booking {
                 if (! empty($data['time_slot_id']) && ! $availability->isSlotAvailable(
                     $data['appointment_date'],
                     (int) $data['time_slot_id'],
@@ -65,7 +66,9 @@ class BookingController extends Controller
                 }
 
                 if ($request->hasFile('reference_look')) {
-                    $data['reference_image_path'] = $request->file('reference_look')->store('reference-looks', 'public');
+                    $stored = $images->store($request->file('reference_look'), 'reference-looks', thumbnailWidth: 360);
+                    $images->deleteStoredImages([$stored['path'], $stored['thumbnail_path']]);
+                    $data['reference_image_path'] = $stored['webp_path'];
                 }
 
                 return Booking::create([

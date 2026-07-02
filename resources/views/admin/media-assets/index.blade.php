@@ -37,10 +37,15 @@
                 @forelse($assets as $a)
                     <tr class="border-t border-black/10">
                         <td class="px-4 py-3">
-                            <img src="{{ \Illuminate\Support\Facades\Storage::disk($a->disk)->url($a->path) }}" class="h-14 w-24 rounded-xl border border-black/10 object-cover" alt="">
+                            <img src="{{ $a->url('thumbnail') }}" class="h-14 w-24 rounded-xl border border-black/10 object-cover" alt="">
                         </td>
                         <td class="px-4 py-3 font-mono text-xs">{{ $a->key }}</td>
-                        <td class="px-4 py-3">{{ $a->title ?: '-' }}</td>
+                        <td class="px-4 py-3">
+                            <div>{{ $a->title ?: '-' }}</div>
+                            @if($a->width && $a->height)
+                                <div class="mt-1 text-xs text-black/50">{{ $a->width }} x {{ $a->height }}</div>
+                            @endif
+                        </td>
                         <td class="px-4 py-3">
                             <span class="inline-flex rounded-full px-2.5 py-1 text-xs font-semibold {{ $a->is_active ? 'bg-emerald-100 text-emerald-900' : 'bg-gray-100 text-gray-700' }}">
                                 {{ $a->is_active ? 'Yes' : 'No' }}

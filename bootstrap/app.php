@@ -16,6 +16,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'admin.2fa' => \App\Http\Middleware\EnsureAdminTwoFactorVerified::class,
         ]);
 
+        $middleware->trustHosts(at: static function (): array {
+            $host = parse_url((string) config('app.url'), PHP_URL_HOST);
+
+            return $host ? ['^'.preg_quote($host).'$'] : [];
+        }, subdomains: false);
+
         $middleware->web(append: [
             \App\Http\Middleware\SecurityHeadersMiddleware::class,
         ]);
